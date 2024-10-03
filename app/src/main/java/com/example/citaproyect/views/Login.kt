@@ -11,7 +11,7 @@ fun Login(navController: NavController) {
         Text(text = "Listo Humberto, ya tienes el botón >:(, ya tuviste lo que querías, " +
                 "así que vete, ouiiii, ouiiiiiiiIiIiIiII :(")
         Button(onClick = { navController.navigate("Menu") }) {
-            Text(text = "Entrar")
+            Text(text = "Entrar.")
         }
     }
 }
