@@ -1,3 +1,3 @@
 package com.example.citaproyect.views
 
-//Pantalla general
+//Pantalla Principal
