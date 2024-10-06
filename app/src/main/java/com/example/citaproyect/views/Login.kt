@@ -56,17 +56,24 @@ fun Login(navController: NavController) {
             label = { Text("Password") },
             modifier = Modifier.fillMaxWidth(),
             singleLine = true,
-            visualTransformation = if (passwordVisible) VisualTransformation.None else PasswordVisualTransformation(),
+            visualTransformation = if (passwordVisible)
+                VisualTransformation.None
+            else PasswordVisualTransformation(),
             trailingIcon = {
                 val image = if (passwordVisible)
-                    painterResource(id = android.R.drawable.ic_menu_view) // icono para mostrar contraseña
+                    painterResource(
+                        id = android.R.drawable.ic_menu_view) // icono para mostrar contraseña
                 else
-                    painterResource(id = android.R.drawable.ic_secure) // icono para ocultar contraseña
+                    painterResource(
+                        id = android.R.drawable.ic_secure) // icono para ocultar contraseña
 
                 Icon(
                     painter = image,
-                    contentDescription = if (passwordVisible) "Hide password" else "Show password",
-                    modifier = Modifier.clickable { passwordVisible = !passwordVisible }
+                    contentDescription =
+                    if (passwordVisible) "Hide password"
+                    else "Show password",
+                    modifier = Modifier
+                        .clickable { passwordVisible = !passwordVisible }
                 )
             },
             keyboardOptions = KeyboardOptions.Default.copy(
@@ -105,7 +112,6 @@ fun Login(navController: NavController) {
             text = "Forgot password?",
             color = Color.Blue,
             modifier = Modifier.clickable {
-                // Aquí podrías navegar a otra pantalla para recuperar la contraseña
             }
         )
     }
