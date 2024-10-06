@@ -18,4 +18,6 @@
     <color name="ligthAqua">#2B7A78</color>
     <color name="flatSummer"> #50B5A1</color>
     <color name="deepPink">#FF1493 </color>
+    <color name="navbar">#1c1c1e</color>
+
 </resources>

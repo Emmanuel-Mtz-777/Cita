@@ -13,6 +13,12 @@ import androidx.navigation.NavHostController
 import androidx.navigation.compose.composable
 import com.example.citaproyect.views.Login
 import com.example.citaproyect.views.Menu
+import com.example.citaproyect.views.Groups
+import com.example.citaproyect.views.Events
+import com.example.citaproyect.views.User
+import com.example.citaproyect.views.Chats
+import com.example.citaproyect.views.NewEvents
+import com.example.citaproyect.views.NewGroup
 
 
 class MainActivity : ComponentActivity() {
@@ -42,6 +48,24 @@ fun setupNavGraph(navController: NavHostController) {
         }
         composable("Menu") {
             Menu(navController)
+        }
+        composable("Groups") {
+            Groups(navController)
+        }
+        composable("Chats") {
+            Chats(navController)
+        }
+        composable("Events") {
+            Events(navController)
+        }
+        composable("User") {
+            User(navController)
+        }
+        composable("NewGroup") {
+            NewGroup(navController)
+        }
+        composable("NewEvents") {
+            NewEvents(navController)
         }
 
     }
