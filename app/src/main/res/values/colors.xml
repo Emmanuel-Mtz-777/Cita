@@ -11,6 +11,7 @@
     <color name="darkMidnightBlue"> #001e2f</color>
     <color name="richBlack">#0c3141</color>
     <color name="prussianBlue">#063b4e</color>
+    <color name="OceanBlue">#FF23115F </color>
     <color name="blueSapphire">#12414e</color>
     <color name="jellybean">#177691</color>
     <color name="blueMunsell">#0e8cb5</color>
@@ -18,4 +19,5 @@
     <color name="ligthAqua">#2B7A78</color>
     <color name="flatSummer"> #50B5A1</color>
     <color name="deepPink">#FF1493 </color>
+
 </resources>
