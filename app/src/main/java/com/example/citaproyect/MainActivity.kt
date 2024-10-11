@@ -11,6 +11,7 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.composable
+import com.example.citaproyect.views.ChatView
 import com.example.citaproyect.views.Login
 import com.example.citaproyect.views.Menu
 import com.example.citaproyect.views.Groups
@@ -66,6 +67,10 @@ fun setupNavGraph(navController: NavHostController) {
         }
         composable("NewEvents") {
             NewEvents(navController)
+        }
+        // Nueva vista para la conversación del chat seleccionado
+        composable("chatView/{chatName}") { backStackEntry ->
+            ChatView(navBackStackEntry = backStackEntry)
         }
 
     }
