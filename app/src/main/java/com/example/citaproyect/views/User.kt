@@ -5,8 +5,6 @@ import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.CircleShape
-import androidx.compose.foundation.text.BasicTextField
-import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material.icons.filled.Home
@@ -26,11 +24,13 @@ import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.text.input.KeyboardType
-import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
+import androidx.navigation.NavHostController
+import androidx.navigation.compose.NavHost
+import androidx.navigation.compose.composable
+import androidx.navigation.compose.rememberNavController
 import com.example.citaproyect.R
 import com.example.citaproyect.models.data.NavigationItem
 
@@ -123,7 +123,6 @@ fun User(navController: NavController) {
                     )
                 }
 
-                // Nombre y ID
                 Text(
                     text = "Pepito Ramirez Foraneo",
                     fontSize = 22.sp,
@@ -137,14 +136,13 @@ fun User(navController: NavController) {
 
                 Spacer(modifier = Modifier.height(16.dp))
 
-                // Información del usuario
+
                 ProfileInfoField(label = "Carrera:", info = "Ingeniería Gestión Empresarial")
                 ProfileInfoField(label = "Semestre:", info = "3ro")
                 ProfileInfoField(label = "Descripción:", info = "Abre tu menteeeeee \uD83D\uDED0")
 
                 Spacer(modifier = Modifier.height(16.dp))
 
-                // Preferencias del usuario (Chips)
                 Row(
                     horizontalArrangement = Arrangement.spacedBy(8.dp),
                     modifier = Modifier.fillMaxWidth(),
@@ -156,12 +154,13 @@ fun User(navController: NavController) {
 
                 Spacer(modifier = Modifier.height(16.dp))
 
-                // Botón Editar Perfil
                 Button(
-                    onClick = { /**/ },
+                    onClick = {
+                        navController.navigate("EditUser")
+                    },
                     colors = ButtonDefaults.buttonColors(
-                        colorResource(
-                            id = R.color.jellybean)),
+                        colorResource(id = R.color.jellybean)
+                    ),
                 ) {
                     Text(text = "Editar Perfil", fontSize = 18.sp)
                 }
@@ -196,6 +195,16 @@ fun Chip(label: String) {
             .padding(horizontal = 16.dp, vertical = 8.dp)
     ) {
         Text(text = label, color = Color.White, fontSize = 14.sp)
+    }
+}
+
+@Composable
+fun NavigationApp() {
+    val navController = rememberNavController()
+
+    NavHost(navController = navController, startDestination = "User") {
+        composable("User") { User(navController) }
+        composable("EditUser") { EditUser(navController) }
     }
 }
 
