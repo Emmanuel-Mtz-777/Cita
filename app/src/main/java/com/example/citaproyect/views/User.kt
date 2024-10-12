@@ -121,18 +121,6 @@ fun User(navController: NavController) {
                             .clip(CircleShape),
                         contentScale = ContentScale.Crop
                     )
-                    IconButton(
-                        onClick = { /**/ },
-                        modifier = Modifier
-                            .size(30.dp)
-                            .background(Color.White, CircleShape)
-                    ) {
-                        Icon(
-                            imageVector = Icons.Default.Edit,
-                            contentDescription = "Edit Profile Picture",
-                            tint = Color.DarkGray
-                        )
-                    }
                 }
 
                 // Nombre y ID
