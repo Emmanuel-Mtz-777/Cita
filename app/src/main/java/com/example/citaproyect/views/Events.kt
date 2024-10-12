@@ -1,4 +1,4 @@
-package com.example.citaproyect.views // Asegúrate de que la ruta sea correcta
+package com.example.citaproyect.views
 
 import androidx.compose.material3.*
 import androidx.compose.foundation.background
@@ -72,16 +72,16 @@ fun Events(navController: NavController) {
                 onClick = {
                     navController.navigate("NewEvents")
                 },
-                containerColor = Color.White, // Color del FAB
-                contentColor = colorResource(id = R.color.jellybean) // Color del icono dentro del FAB
+                containerColor = Color.White,
+                contentColor = colorResource(id = R.color.jellybean)
             ) {
                 Icon(
-                    imageVector = Icons.Filled.Add, // Usando el ícono de '+'
+                    imageVector = Icons.Filled.Add,
                     contentDescription = "Add"
                 )
             }
         },
-        floatingActionButtonPosition = FabPosition.End // Posición del FAB a la derecha
+        floatingActionButtonPosition = FabPosition.End
     ) { innerPadding ->
         Box(
             modifier = Modifier
