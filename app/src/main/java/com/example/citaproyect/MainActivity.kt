@@ -17,6 +17,7 @@ import com.example.citaproyect.views.Groups
 import com.example.citaproyect.views.Events
 import com.example.citaproyect.views.User
 import com.example.citaproyect.views.Chats
+import com.example.citaproyect.views.EditUser
 import com.example.citaproyect.views.NewEvents
 import com.example.citaproyect.views.NewGroup
 
@@ -66,6 +67,9 @@ fun setupNavGraph(navController: NavHostController) {
         }
         composable("NewEvents") {
             NewEvents(navController)
+        }
+        composable("EditUser") {
+            EditUser(navController)
         }
 
     }
