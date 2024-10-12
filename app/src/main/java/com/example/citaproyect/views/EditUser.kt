@@ -9,6 +9,7 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.text.input.TextFieldValue
@@ -23,60 +24,76 @@ fun EditUser(navController: NavController) {
     val selectedItem = remember { mutableStateOf(4) }
 
     Scaffold(
-        bottomBar = { BottomNavigationBar(
-            navController = navController,
-            selectedItem = selectedItem) }
+        bottomBar = { BottomNavigationBar(navController = navController, selectedItem = selectedItem) }
     ) { innerPadding ->
-        Column(
+        Box(
             modifier = Modifier
                 .fillMaxSize()
                 .padding(innerPadding)
-                .padding(16.dp),
-            horizontalAlignment = Alignment.CenterHorizontally,
-            verticalArrangement = Arrangement.Center
-        ) {
-            var name by remember { mutableStateOf("Pepito Ramirez Foraneo") }
-            var description by remember { mutableStateOf("Abre tu menteeeeee 🧠") }
-
-            Text(
-                text = "Editar Perfil",
-                fontSize = 24.sp,
-                color = Color.White
-            )
-            Spacer(modifier = Modifier.height(16.dp))
-
-            BasicTextField(
-                value = name,
-                onValueChange = { name = it },
-                textStyle = LocalTextStyle.current.copy(color = Color.White),
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(16.dp)
-                    .background(Color.Gray.copy(alpha = 0.2f), shape = MaterialTheme.shapes.small)
-                    .padding(8.dp)
-            )
-
-            BasicTextField(
-                value = description,
-                onValueChange = { description = it },
-                textStyle = LocalTextStyle.current.copy(color = Color.White),
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(16.dp)
-                    .background(Color.Gray.copy(alpha = 0.2f), shape = MaterialTheme.shapes.small)
-                    .padding(8.dp)
-            )
-            Spacer(modifier = Modifier.height(16.dp))
-
-            Button(
-                onClick = {
-                    navController.popBackStack()
-                },
-                colors = ButtonDefaults.buttonColors(
-                    containerColor = colorResource(id = R.color.jellybean)
+                .background(
+                    brush = Brush.verticalGradient(
+                        colors = listOf(
+                            colorResource(id = R.color.darkMidnightBlue),
+                            colorResource(id = R.color.richBlack),
+                            colorResource(id = R.color.prussianBlue)
+                        )
+                    )
                 )
+        ) {
+            Column(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(16.dp),
+                horizontalAlignment = Alignment.CenterHorizontally,
+                verticalArrangement = Arrangement.Center
             ) {
-                Text(text = "Guardar Cambios", color = Color.White)
+                var name by remember { mutableStateOf("Pepito Ramirez Foraneo") }
+                var description by remember { mutableStateOf("Abre tu menteeeeee 🧠") }
+
+                Text(
+                    text = "Editar Perfil",
+                    fontSize = 24.sp,
+                    color = Color.White
+                )
+                Spacer(modifier = Modifier.height(16.dp))
+
+                //Campo para poder editar próximamente el nombre
+                BasicTextField(
+                    value = name,
+                    onValueChange = { name = it },
+                    textStyle = LocalTextStyle.current.copy(color = Color.White),
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(16.dp)
+                        .background(Color.Gray.copy(alpha = 0.2f), shape = MaterialTheme.shapes.small)
+                        .padding(8.dp)
+                )
+
+                // Campo para editar próximamente la descripción
+                BasicTextField(
+                    value = description,
+                    onValueChange = { description = it },
+                    textStyle = LocalTextStyle.current.copy(color = Color.White),
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(16.dp)
+                        .background(Color.Gray.copy(alpha = 0.2f), shape = MaterialTheme.shapes.small)
+                        .padding(8.dp)
+                )
+
+                Spacer(modifier = Modifier.height(16.dp))
+
+                // Botón para guardar los cambios y regresar
+                Button(
+                    onClick = {
+                        navController.popBackStack()
+                    },
+                    colors = ButtonDefaults.buttonColors(
+                        containerColor = colorResource(id = R.color.jellybean)
+                    )
+                ) {
+                    Text(text = "Guardar Cambios", color = Color.White)
+                }
             }
         }
     }
