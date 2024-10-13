@@ -1,19 +1,36 @@
 package com.example.citaproyect.views
 
 
-import androidx.compose.material3.*
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.*
+import androidx.compose.material.icons.filled.Edit
+import androidx.compose.material.icons.filled.Home
+import androidx.compose.material.icons.filled.Info
+import androidx.compose.material.icons.filled.Person
+import androidx.compose.material.icons.filled.Search
+import androidx.compose.material.icons.filled.Settings
+import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.colorResource
+import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
+import androidx.navigation.NavHostController
+import androidx.navigation.compose.NavHost
+import androidx.navigation.compose.composable
+import androidx.navigation.compose.rememberNavController
 import com.example.citaproyect.R
 import com.example.citaproyect.models.data.NavigationItem
 
@@ -85,11 +102,109 @@ fun User(navController: NavController) {
             Column(
                 modifier = Modifier
                     .fillMaxSize()
-                    .fillMaxWidth(),
+                    .padding(horizontal = 16.dp)
+                    .padding(top = 32.dp),
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
-               //Contenido
+                // Imagen de perfil
+                Box(
+                    contentAlignment = Alignment.BottomEnd,
+                    modifier = Modifier
+                        .size(120.dp)
+                        .padding(bottom = 8.dp)
+                ) {
+                    Image(
+                        painter = painterResource(id = R.drawable.auron),
+                        contentDescription = "User Profile Picture",
+                        modifier = Modifier
+                            .size(120.dp)
+                            .clip(CircleShape),
+                        contentScale = ContentScale.Crop
+                    )
+                }
+
+                Text(
+                    text = "Pepito Ramirez Foraneo",
+                    fontSize = 22.sp,
+                    color = Color.White
+                )
+                Text(
+                    text = "21151909",
+                    fontSize = 20.sp,
+                    color = Color.White
+                )
+
+                Spacer(modifier = Modifier.height(16.dp))
+
+
+                ProfileInfoField(label = "Carrera:", info = "Ingeniería Gestión Empresarial")
+                ProfileInfoField(label = "Semestre:", info = "3ro")
+                ProfileInfoField(label = "Descripción:", info = "Abre tu menteeeeee \uD83D\uDED0")
+
+                Spacer(modifier = Modifier.height(16.dp))
+
+                Row(
+                    horizontalArrangement = Arrangement.spacedBy(8.dp),
+                    modifier = Modifier.fillMaxWidth(),
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Chip(label = "Malinche")
+                    Chip(label = "BTS")
+                }
+
+                Spacer(modifier = Modifier.height(16.dp))
+
+                Button(
+                    onClick = {
+                        navController.navigate("EditUser")
+                    },
+                    colors = ButtonDefaults.buttonColors(
+                        colorResource(id = R.color.jellybean)
+                    ),
+                ) {
+                    Text(text = "Editar Perfil", fontSize = 18.sp)
+                }
             }
         }
     }
 }
+
+@Composable
+fun ProfileInfoField(label: String, info: String) {
+    Column(modifier = Modifier.fillMaxWidth()) {
+        Text(text = label, color = Color.White, fontSize = 20.sp)
+        Text(
+            text = info,
+            color = Color.White,
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(vertical = 4.dp)
+                .background(Color.White.copy(alpha = 0.1f))
+                .padding(8.dp),
+            fontSize = 16.sp
+        )
+    }
+    Spacer(modifier = Modifier.height(8.dp))
+}
+
+@Composable
+fun Chip(label: String) {
+    Box(
+        modifier = Modifier
+            .background(colorResource(id = R.color.darkMidnightBlue), CircleShape)
+            .padding(horizontal = 16.dp, vertical = 8.dp)
+    ) {
+        Text(text = label, color = Color.White, fontSize = 14.sp)
+    }
+}
+
+@Composable
+fun NavigationApp() {
+    val navController = rememberNavController()
+
+    NavHost(navController = navController, startDestination = "User") {
+        composable("User") { User(navController) }
+        composable("EditUser") { EditUser(navController) }
+    }
+}
+
