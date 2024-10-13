@@ -59,7 +59,7 @@ fun Events(navController: NavController) {
                                 "Chats" -> "Chats"
                                 "Events" -> "Events"
                                 "User" -> "User"
-                                else -> "Groups"
+                                else -> "Events"
                             }
                             navController.navigate(route)
                         },
