@@ -1,25 +1,56 @@
-package com.example.citaproyect.views // Asegúrate de que la ruta sea correcta
+package com.example.citaproyect.views
 
-import androidx.compose.material3.*
+import androidx.compose.foundation.ExperimentalFoundationApi
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.lazy.grid.GridCells
+import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
+import androidx.compose.foundation.lazy.grid.items
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.*
+import androidx.compose.material.icons.filled.Add
+import androidx.compose.material.icons.filled.Create
+import androidx.compose.material.icons.filled.Home
+import androidx.compose.material.icons.filled.Info
+import androidx.compose.material.icons.filled.Person
+import androidx.compose.material.icons.filled.Search
+import androidx.compose.material.icons.filled.Settings
+import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.colorResource
+import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
-import androidx.navigation.NavHostController
 import com.example.citaproyect.R
+import com.example.citaproyect.models.data.GroupsModel
 import com.example.citaproyect.models.data.NavigationItem
 
 @Composable
 fun Groups(navController: NavController) {
-    val selectedItem = remember { mutableStateOf(1) }
+    val selectedItem = remember { mutableStateOf(1) } // Initial selected index for bottom navigation
+
+    // Lista de grupos
+    val groups = listOf(
+        GroupsModel("Estudihambres", R.drawable.estudiambres, "Grupo de Estudios", "Reglas: No contenido +18, Respeto entre miembros, Asistencia a las sesiones."),
+        GroupsModel("Operativos 1-2", R.drawable.operativos, "Sistemas Operativos 1-2", "Reglas: No contenido +18, Respeto entre miembros, Asistencia a las sesiones."),
+        GroupsModel("Los Caballeros", R.drawable.caballeros, "Los Caballeros seguimos aqui", "Reglas: No contenido +18, Respeto entre miembros, Asistencia a las sesiones."),
+        GroupsModel("Ciencia y Tecnología", R.drawable.estudiambres, "Un laboratorio de ideas donde la innovación y el descubrimiento son la norma. ¡Únete a nosotros!", "Reglas: No contenido +18, Respeto entre miembros, Asistencia a las sesiones."),
+        GroupsModel("Arte y Diseño", R.drawable.operativos, "Un refugio creativo donde las ideas florecen y la imaginación no tiene límites. ¡Deja que tu talento brille!", "Reglas: No contenido +18, Respeto entre miembros, Asistencia a las sesiones."),
+        GroupsModel("Aventuras al Aire Libre", R.drawable.caballeros, "Un grupo de exploradores que buscan la adrenalina y la emoción en cada rincón de la naturaleza.", "Reglas: No contenido +18, Respeto entre miembros, Asistencia a las sesiones."),
+        GroupsModel("Música y Expresión", R.drawable.estudiambres, "Un coro de voces donde la creatividad y la armonía se unen para celebrar el arte de la música.", "Reglas: No contenido +18, Respeto entre miembros, Asistencia a las sesiones."),
+        GroupsModel("Literatura y Escritura", R.drawable.operativos, "Un santuario de letras donde las historias cobran vida y la escritura es una aventura compartida.", "Reglas: No contenido +18, Respeto entre miembros, Asistencia a las sesiones."),
+        GroupsModel("Salud y Bienestar", R.drawable.caballeros, "Un grupo dedicado a promover la salud física y mental, compartiendo consejos y experiencias positivas.", "Reglas: No contenido +18, Respeto entre miembros, Asistencia a las sesiones."),
+        GroupsModel("Viajes y Exploración", R.drawable.estudiambres, "Un club de viajeros intrépidos listos para compartir historias y consejos sobre sus aventuras alrededor del mundo.", "Reglas: No contenido +18, Respeto entre miembros, Asistencia a las sesiones.")
+    )
 
     Scaffold(
         bottomBar = {
@@ -39,7 +70,6 @@ fun Groups(navController: NavController) {
                         selected = selectedItem.value == index,
                         onClick = {
                             selectedItem.value = index
-
                             val route = when (item.label) {
                                 "Home" -> "Menu"
                                 "Groups" -> "Groups"
@@ -69,20 +99,19 @@ fun Groups(navController: NavController) {
         },
         floatingActionButton = {
             FloatingActionButton(
-                onClick = {
-                    navController.navigate("NewGroup")
-                },
-                containerColor = Color.White, // Color del FAB
-                contentColor = colorResource(id = R.color.jellybean) // Color del icono dentro del FAB
+                onClick = { navController.navigate("NewGroup") },
+                containerColor = Color.White,
+                contentColor = colorResource(id = R.color.jellybean)
             ) {
                 Icon(
-                    imageVector = Icons.Filled.Add, // Usando el ícono de '+'
-                    contentDescription = "Add"
+                    imageVector = Icons.Filled.Add,
+                    contentDescription = "Add Event"
                 )
             }
         },
-        floatingActionButtonPosition = FabPosition.End // Posición del FAB a la derecha
+        floatingActionButtonPosition = FabPosition.End
     ) { innerPadding ->
+
         Box(
             modifier = Modifier
                 .fillMaxSize()
@@ -100,11 +129,199 @@ fun Groups(navController: NavController) {
             Column(
                 modifier = Modifier
                     .fillMaxSize()
-                    .fillMaxWidth(),
-                horizontalAlignment = Alignment.CenterHorizontally
+                    .padding(10.dp)
+                    .verticalScroll(rememberScrollState())
             ) {
                 navbar()
+                // Título de grupos
+                Text(
+                    text = "Mis grupos",
+                    style = MaterialTheme.typography.headlineMedium,
+                    color = Color.White,
+                    modifier = Modifier.padding(8.dp)
+                )
+
+                // Fila de grupos en miniatura
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(5.dp)
+                        .horizontalScroll(rememberScrollState()),
+                ) {
+                    groups.take(3).forEach { groupItem ->
+                        GroupRowHorizontal(group = groupItem, navController)
+                    }
+                }
+
+                Spacer(modifier = Modifier.height(16.dp))
+                Text(
+                    text = "Más grupos",
+                    style = MaterialTheme.typography.headlineMedium,
+                    color = Color.White,
+                    modifier = Modifier.padding(8.dp)
+                )
+
+                groups.drop(3).forEach { groupItem ->
+                    GroupGridItem(group = groupItem, navController)
+                }
+
             }
         }
     }
+}
+
+@Composable
+fun GroupRowHorizontal(group: GroupsModel, navController: NavController) {
+    var showDialog by remember { mutableStateOf(false) }
+
+    Box(
+        modifier = Modifier
+            .width(300.dp)
+            .padding(5.dp)
+            .clickable {
+                showDialog = true
+            },
+        contentAlignment = Alignment.Center
+    ) {
+        Image(
+            painter = painterResource(id = group.imageResId),
+            contentDescription = group.title,
+            modifier = Modifier
+                .fillMaxHeight()
+                .fillMaxWidth()
+                .aspectRatio(16f / 9f)
+        )
+        Text(
+            text = group.title,
+            style = MaterialTheme.typography.bodyLarge,
+            color = Color.White,
+            modifier = Modifier
+                .align(Alignment.TopCenter)
+                .padding(8.dp)
+                .background(
+                    Color.Black.copy(alpha = 0.5f),
+                    shape = MaterialTheme.shapes.medium
+                )
+                .padding(8.dp)
+        )
+    }
+
+    if (showDialog) {
+        GroupDetailsDialog(
+            group = group,
+            onDismiss = { showDialog = false }
+        )
+    }
+}
+
+@Composable
+fun GroupGridItem(group: GroupsModel, navController: NavController) {
+    var showJoinDialog by remember { mutableStateOf(false) }
+
+    Box(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(5.dp)
+            .background(Color.LightGray, shape = MaterialTheme.shapes.medium)
+            .clickable {
+                showJoinDialog = true
+            },
+        contentAlignment = Alignment.Center
+    ) {
+        Image(
+            painter = painterResource(id = group.imageResId),
+            contentDescription = group.title,
+            modifier = Modifier
+                .fillMaxWidth()
+                .aspectRatio(16f / 9f)
+                .background(Color.White, shape = MaterialTheme.shapes.medium)
+        )
+        Text(
+            text = group.title,
+            style = MaterialTheme.typography.bodyLarge,
+            color = Color.White,
+            modifier = Modifier
+                .align(Alignment.TopCenter)
+                .padding(8.dp)
+                .background(Color.Black.copy(alpha = 0.5f))
+                .padding(8.dp)
+        )
+    }
+
+    if (showJoinDialog) {
+        JoinGroupDialog(
+            group = group,
+            onDismiss = { showJoinDialog = false }
+        )
+    }
+}
+
+@Composable
+fun GroupDetailsDialog(group: GroupsModel, onDismiss: () -> Unit) {
+    AlertDialog(
+        onDismissRequest = onDismiss,
+        title = { Text(text = group.title) },
+        text = {
+            Column(horizontalAlignment = Alignment.CenterHorizontally) {
+                // Mostrar la imagen del grupo
+                Image(
+                    painter = painterResource(id = group.imageResId),
+                    contentDescription = group.title,
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .height(200.dp)
+                        .clip(MaterialTheme.shapes.medium)
+                )
+                Spacer(modifier = Modifier.height(8.dp))
+                Text(text = group.description)
+                Text(text = group.rules)
+            }
+        },
+        confirmButton = {
+            TextButton(onClick = onDismiss) {
+                Text("Salir") // Solo botón "Salir"
+            }
+        }
+    )
+}
+
+
+
+@Composable
+fun JoinGroupDialog(group: GroupsModel, onDismiss: () -> Unit) {
+    AlertDialog(
+        onDismissRequest = onDismiss,
+
+        title = { Text(text = "Unirse a ${group.title}") },
+        text = {
+            Column(horizontalAlignment = Alignment.CenterHorizontally) {
+                Text("¿Te gustaría unirte a este grupo?")
+                Spacer(modifier = Modifier.height(8.dp))
+                Image(
+                    painter = painterResource(id = group.imageResId),
+                    contentDescription = group.title,
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .height(200.dp)
+                        .clip(MaterialTheme.shapes.medium)
+                )
+                Spacer(modifier = Modifier.height(8.dp))
+                Text(text = group.description)
+                Text(text = group.rules)
+            }
+        },
+        confirmButton = {
+            TextButton(onClick = {
+                // Manejar la lógica de unirse al grupo aquí
+                onDismiss()
+            }) {
+                Text("Solicitar Unirse")
+            }
+        },
+        dismissButton = {
+            TextButton(onClick = onDismiss) {
+                Text("Cancelar")
+            }
+        }
+    )
 }
