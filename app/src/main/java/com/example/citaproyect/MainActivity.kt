@@ -10,7 +10,17 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.composable
+import com.example.citaproyect.views.Login
+import com.example.citaproyect.views.Menu
+import com.example.citaproyect.views.Groups
+import com.example.citaproyect.views.Events
+import com.example.citaproyect.views.User
+import com.example.citaproyect.views.Chats
+import com.example.citaproyect.views.EditUser
+import com.example.citaproyect.views.NewEvents
+import com.example.citaproyect.views.NewGroup
 import com.example.citaproyect.views.*
+
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -56,7 +66,7 @@ fun setupNavGraph(navController: NavHostController) {
         composable("NewEvents") {
             NewEvents(navController)
         }
-        composable("NewSurvey") {
+         composable("NewSurvey") {
             NewSurvey(navController)
         }
         composable("EventDetail/{title}/{description}/{date}") { backStackEntry ->
@@ -65,6 +75,8 @@ fun setupNavGraph(navController: NavHostController) {
         composable("SurveyDetail/{title}") { backStackEntry ->
             SurveyDetail(navBackStackEntry = backStackEntry)
         }
-
+         composable("EditUser") {
+            EditUser(navController)
+         }
     }
 }

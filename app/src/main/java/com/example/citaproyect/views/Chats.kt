@@ -1,4 +1,4 @@
-package com.example.citaproyect.views // Asegúrate de que la ruta sea correcta
+package com.example.citaproyect.views
 
 import androidx.compose.material3.*
 import androidx.compose.foundation.background
