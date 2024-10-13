@@ -1,6 +1,5 @@
 package com.example.citaproyect
 
-
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
@@ -20,24 +19,23 @@ import com.example.citaproyect.views.Chats
 import com.example.citaproyect.views.EditUser
 import com.example.citaproyect.views.NewEvents
 import com.example.citaproyect.views.NewGroup
+import com.example.citaproyect.views.*
 
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        //enableEdgeToEdge()
         setContent {
             ComposeMultiScreenApp()
         }
     }
 }
 
-
 @Composable
-fun ComposeMultiScreenApp(){
-    val navController=rememberNavController()
-    Surface (color = Color.White){
-        setupNavGraph(navController=navController)
+fun ComposeMultiScreenApp() {
+    val navController = rememberNavController()
+    Surface(color = Color.White) {
+        setupNavGraph(navController = navController)
     }
 }
 
@@ -68,9 +66,17 @@ fun setupNavGraph(navController: NavHostController) {
         composable("NewEvents") {
             NewEvents(navController)
         }
-        composable("EditUser") {
-            EditUser(navController)
+         composable("NewSurvey") {
+            NewSurvey(navController)
         }
-
+        composable("EventDetail/{title}/{description}/{date}") { backStackEntry ->
+            EventDetail(navBackStackEntry = backStackEntry)
+        }
+        composable("SurveyDetail/{title}") { backStackEntry ->
+            SurveyDetail(navBackStackEntry = backStackEntry)
+        }
+         composable("EditUser") {
+            EditUser(navController)
+         }
     }
 }

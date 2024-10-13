@@ -14,35 +14,36 @@ import com.example.citaproyect.R
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun NewEvents(navController: NavController) {
+fun NewSurvey(navController: NavController) {
     var title by remember { mutableStateOf("") }
-    var description by remember { mutableStateOf("") }
-    var date by remember { mutableStateOf("") }
+    var question by remember { mutableStateOf("") }
+    var option1 by remember { mutableStateOf("") }
+    var option2 by remember { mutableStateOf("") }
     var showConfirmation by remember { mutableStateOf(false) }
 
     Column(
         modifier = Modifier
             .fillMaxSize()
             .padding(16.dp)
-            .background(color = colorResource(id = R.color.darkMidnightBlue)), // Color de fondo de la columna
+            .background(color = colorResource(id = R.color.darkMidnightBlue)), // Color de fondo
         verticalArrangement = Arrangement.Center, // Centra verticalmente el contenido
         horizontalAlignment = Alignment.CenterHorizontally // Centra horizontalmente el contenido
     ) {
         // Título
         Text(
-            text = "Crear Nuevo Evento",
+            text = "Crear Nueva Encuesta",
             style = MaterialTheme.typography.headlineMedium,
             color = Color.White
         )
         Spacer(modifier = Modifier.height(24.dp))
 
-        // Campo para el Título
+        // Campo para el Título de la Encuesta
         TextField(
             value = title,
             onValueChange = { title = it },
-            label = { Text("Título") },
+            label = { Text("Título de la Encuesta") },
             colors = TextFieldDefaults.textFieldColors(
-                containerColor = Color.Transparent, // Fondo transparente
+                containerColor = Color.Transparent,
                 focusedIndicatorColor = Color.White,
                 unfocusedIndicatorColor = Color.LightGray,
                 focusedLabelColor = Color.White,
@@ -52,13 +53,13 @@ fun NewEvents(navController: NavController) {
         )
         Spacer(modifier = Modifier.height(8.dp))
 
-        // Campo para la Descripción
+        // Campo para la Pregunta
         TextField(
-            value = description,
-            onValueChange = { description = it },
-            label = { Text("Descripción") },
+            value = question,
+            onValueChange = { question = it },
+            label = { Text("Pregunta") },
             colors = TextFieldDefaults.textFieldColors(
-                containerColor = Color.Transparent, // Fondo transparente
+                containerColor = Color.Transparent,
                 focusedIndicatorColor = Color.White,
                 unfocusedIndicatorColor = Color.LightGray,
                 focusedLabelColor = Color.White,
@@ -68,13 +69,29 @@ fun NewEvents(navController: NavController) {
         )
         Spacer(modifier = Modifier.height(8.dp))
 
-        // Campo para la Fecha
+        // Campo para la Opción 1
         TextField(
-            value = date,
-            onValueChange = { date = it },
-            label = { Text("Fecha") },
+            value = option1,
+            onValueChange = { option1 = it },
+            label = { Text("Opción 1") },
             colors = TextFieldDefaults.textFieldColors(
-                containerColor = Color.Transparent, // Fondo transparente
+                containerColor = Color.Transparent,
+                focusedIndicatorColor = Color.White,
+                unfocusedIndicatorColor = Color.LightGray,
+                focusedLabelColor = Color.White,
+                unfocusedLabelColor = Color.LightGray,
+                cursorColor = Color.White
+            )
+        )
+        Spacer(modifier = Modifier.height(8.dp))
+
+        // Campo para la Opción 2
+        TextField(
+            value = option2,
+            onValueChange = { option2 = it },
+            label = { Text("Opción 2") },
+            colors = TextFieldDefaults.textFieldColors(
+                containerColor = Color.Transparent,
                 focusedIndicatorColor = Color.White,
                 unfocusedIndicatorColor = Color.LightGray,
                 focusedLabelColor = Color.White,
@@ -84,24 +101,24 @@ fun NewEvents(navController: NavController) {
         )
         Spacer(modifier = Modifier.height(16.dp))
 
-        // Botón para guardar el evento
+        // Botón para guardar la encuesta
         Button(
             onClick = {
                 showConfirmation = true
-                // Lógica para guardar el evento
+                // Lógica para guardar la encuesta
                 // ...
                 // Después de guardar, puedes volver a la vista de eventos
                 navController.navigate("Events")
             },
             colors = ButtonDefaults.buttonColors(containerColor = Color.Transparent) // Botón transparente
         ) {
-            Text("Guardar Evento", color = Color.White) // Texto blanco en el botón
+            Text("Guardar Encuesta", color = Color.White)
         }
 
         // Mensaje de confirmación
         if (showConfirmation) {
             Spacer(modifier = Modifier.height(16.dp)) // Espacio antes del mensaje
-            Text(text = "Evento guardado con éxito", color = Color.White)
+            Text(text = "Encuesta guardada con éxito", color = Color.White)
         }
     }
 }
