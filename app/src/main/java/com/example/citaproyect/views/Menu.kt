@@ -124,7 +124,7 @@ data class BottomNavItem(val label: String, val icon: ImageVector)
 fun navbar() {
     var searchText by remember { mutableStateOf(TextFieldValue()) }
 
-    val navbarColor = colorResource(id = R.color.navbar).copy(alpha = 0.3f)
+    val navbarColor = colorResource(id = R.color.black).copy(alpha = 0.3f)
 
     Box(
         modifier = Modifier
