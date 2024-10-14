@@ -24,7 +24,6 @@ fun NewSurvey(navController: NavController) {
     Column(
         modifier = Modifier
             .fillMaxSize()
-            .padding(16.dp)
             .background(color = colorResource(id = R.color.darkMidnightBlue)), // Color de fondo
         verticalArrangement = Arrangement.Center, // Centra verticalmente el contenido
         horizontalAlignment = Alignment.CenterHorizontally // Centra horizontalmente el contenido

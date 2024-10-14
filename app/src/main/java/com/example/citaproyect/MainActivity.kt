@@ -66,7 +66,7 @@ fun setupNavGraph(navController: NavHostController) {
         composable("NewEvents") {
             NewEvents(navController)
         }
-         composable("NewSurvey") {
+        composable("NewSurvey") {
             NewSurvey(navController)
         }
         composable("EventDetail/{title}/{description}/{date}") { backStackEntry ->
@@ -75,8 +75,13 @@ fun setupNavGraph(navController: NavHostController) {
         composable("SurveyDetail/{title}") { backStackEntry ->
             SurveyDetail(navBackStackEntry = backStackEntry)
         }
-         composable("EditUser") {
+        composable("EditUser") {
             EditUser(navController)
-         }
+        }
+
+        // Ruta para chat privado con el nombre del chat
+        composable("ChatView/{chatName}") { backStackEntry ->
+            ChatView(navBackStackEntry = backStackEntry)
+        }
     }
 }
