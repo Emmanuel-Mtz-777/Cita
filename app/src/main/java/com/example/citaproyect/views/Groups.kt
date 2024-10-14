@@ -43,13 +43,13 @@ fun Groups(navController: NavController) {
         GroupsModel("Estudihambres", R.drawable.estudiambres, "Grupo de Estudios", "Reglas: No contenido +18, Respeto entre miembros, Asistencia a las sesiones."),
         GroupsModel("Operativos 1-2", R.drawable.operativos, "Sistemas Operativos 1-2", "Reglas: No contenido +18, Respeto entre miembros, Asistencia a las sesiones."),
         GroupsModel("Los Caballeros", R.drawable.caballeros, "Los Caballeros seguimos aqui", "Reglas: No contenido +18, Respeto entre miembros, Asistencia a las sesiones."),
-        GroupsModel("Ciencia y Tecnología", R.drawable.estudiambres, "Un laboratorio de ideas donde la innovación y el descubrimiento son la norma. ¡Únete a nosotros!", "Reglas: No contenido +18, Respeto entre miembros, Asistencia a las sesiones."),
-        GroupsModel("Arte y Diseño", R.drawable.operativos, "Un refugio creativo donde las ideas florecen y la imaginación no tiene límites. ¡Deja que tu talento brille!", "Reglas: No contenido +18, Respeto entre miembros, Asistencia a las sesiones."),
-        GroupsModel("Aventuras al Aire Libre", R.drawable.caballeros, "Un grupo de exploradores que buscan la adrenalina y la emoción en cada rincón de la naturaleza.", "Reglas: No contenido +18, Respeto entre miembros, Asistencia a las sesiones."),
-        GroupsModel("Música y Expresión", R.drawable.estudiambres, "Un coro de voces donde la creatividad y la armonía se unen para celebrar el arte de la música.", "Reglas: No contenido +18, Respeto entre miembros, Asistencia a las sesiones."),
-        GroupsModel("Literatura y Escritura", R.drawable.operativos, "Un santuario de letras donde las historias cobran vida y la escritura es una aventura compartida.", "Reglas: No contenido +18, Respeto entre miembros, Asistencia a las sesiones."),
-        GroupsModel("Salud y Bienestar", R.drawable.caballeros, "Un grupo dedicado a promover la salud física y mental, compartiendo consejos y experiencias positivas.", "Reglas: No contenido +18, Respeto entre miembros, Asistencia a las sesiones."),
-        GroupsModel("Viajes y Exploración", R.drawable.estudiambres, "Un club de viajeros intrépidos listos para compartir historias y consejos sobre sus aventuras alrededor del mundo.", "Reglas: No contenido +18, Respeto entre miembros, Asistencia a las sesiones.")
+        GroupsModel("Ciencia y Tecnología", R.drawable.ciencias, "Un laboratorio de ideas donde la innovación y el descubrimiento son la norma. ¡Únete a nosotros!", "Reglas: No contenido +18, Respeto entre miembros, Asistencia a las sesiones."),
+        GroupsModel("Arte y Diseño", R.drawable.arte, "Un refugio creativo donde las ideas florecen y la imaginación no tiene límites. ¡Deja que tu talento brille!", "Reglas: No contenido +18, Respeto entre miembros, Asistencia a las sesiones."),
+        GroupsModel("Aventuras al Aire Libre", R.drawable.aire, "Un grupo de exploradores que buscan la adrenalina y la emoción en cada rincón de la naturaleza.", "Reglas: No contenido +18, Respeto entre miembros, Asistencia a las sesiones."),
+        GroupsModel("Música y Expresión", R.drawable.music, "Un coro de voces donde la creatividad y la armonía se unen para celebrar el arte de la música.", "Reglas: No contenido +18, Respeto entre miembros, Asistencia a las sesiones."),
+        GroupsModel("Literatura y Escritura", R.drawable.lit, "Un santuario de letras donde las historias cobran vida y la escritura es una aventura compartida.", "Reglas: No contenido +18, Respeto entre miembros, Asistencia a las sesiones."),
+        GroupsModel("Salud y Bienestar", R.drawable.heailty, "Un grupo dedicado a promover la salud física y mental, compartiendo consejos y experiencias positivas.", "Reglas: No contenido +18, Respeto entre miembros, Asistencia a las sesiones."),
+        GroupsModel("Viajes y Exploración", R.drawable.viajes, "Un club de viajeros intrépidos listos para compartir historias y consejos sobre sus aventuras alrededor del mundo.", "Reglas: No contenido +18, Respeto entre miembros, Asistencia a las sesiones.")
     )
 
     Scaffold(
@@ -208,6 +208,7 @@ fun GroupRowHorizontal(group: GroupsModel, navController: NavController) {
 
     if (showDialog) {
         GroupDetailsDialog(
+            navController = navController,
             group = group,
             onDismiss = { showDialog = false }
         )
@@ -222,7 +223,7 @@ fun GroupGridItem(group: GroupsModel, navController: NavController) {
         modifier = Modifier
             .fillMaxWidth()
             .padding(5.dp)
-            .background(Color.LightGray, shape = MaterialTheme.shapes.medium)
+            .background(colorResource(id = R.color.prussianBlue), shape = MaterialTheme.shapes.medium)
             .clickable {
                 showJoinDialog = true
             },
@@ -234,7 +235,7 @@ fun GroupGridItem(group: GroupsModel, navController: NavController) {
             modifier = Modifier
                 .fillMaxWidth()
                 .aspectRatio(16f / 9f)
-                .background(Color.White, shape = MaterialTheme.shapes.medium)
+                .background(colorResource(id = R.color.prussianBlue), shape = MaterialTheme.shapes.medium)
         )
         Text(
             text = group.title,
@@ -257,7 +258,7 @@ fun GroupGridItem(group: GroupsModel, navController: NavController) {
 }
 
 @Composable
-fun GroupDetailsDialog(group: GroupsModel, onDismiss: () -> Unit) {
+fun GroupDetailsDialog(navController: NavController, group: GroupsModel, onDismiss: () -> Unit) {
     AlertDialog(
         onDismissRequest = onDismiss,
         title = { Text(text = group.title) },
@@ -278,12 +279,16 @@ fun GroupDetailsDialog(group: GroupsModel, onDismiss: () -> Unit) {
             }
         },
         confirmButton = {
-            TextButton(onClick = onDismiss) {
-                Text("Salir") // Solo botón "Salir"
+            TextButton(onClick = {
+                navController.navigate("chatView/Groups chat") // Navegar al chat del grupo
+                onDismiss() // Cerrar el diálogo después de la navegación
+            }) {
+                Text("Ver grupo")
             }
         }
     )
 }
+
 
 
 

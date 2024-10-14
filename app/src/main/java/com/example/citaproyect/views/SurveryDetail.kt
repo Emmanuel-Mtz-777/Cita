@@ -13,6 +13,8 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavBackStackEntry
+import androidx.navigation.NavController
+import com.example.citaproyect.models.data.NavigationItem
 import com.example.citaproyect.R
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -26,7 +28,7 @@ fun SurveyDetail(navBackStackEntry: NavBackStackEntry) {
             TopAppBar(
                 title = { Text(text = title, color = Color.White) },
                 navigationIcon = {
-                    IconButton(onClick = { /* Manejar navegación hacia atrás */ }) {
+                    IconButton(onClick = { }) {
                         Icon(Icons.Filled.ArrowBack, contentDescription = "Icono de Regreso", tint = Color.White)
                     }
                 },
