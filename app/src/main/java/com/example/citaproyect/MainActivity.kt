@@ -70,7 +70,7 @@ fun setupNavGraph(navController: NavHostController) {
             NewSurvey(navController)
         }
         composable("EventDetail/{title}/{description}/{date}") { backStackEntry ->
-            EventDetail(navBackStackEntry = backStackEntry)
+            EventDetail(navController = navController, navBackStackEntry = backStackEntry)
         }
         composable("SurveyDetail/{title}") { backStackEntry ->
             SurveyDetail(navBackStackEntry = backStackEntry)
