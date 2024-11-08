@@ -18,13 +18,18 @@ import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import com.example.citaproyect.R
 import com.example.citaproyect.models.data.NavigationItem
+import androidx.compose.foundation.Image
+import androidx.compose.foundation.border
+import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.res.painterResource
 
 @Composable
 fun EditUser(navController: NavController) {
-    val selectedItem = remember { mutableStateOf(4) }
+    val selectedNavItem = remember { mutableStateOf(4) }
 
     Scaffold(
-        bottomBar = { BottomNavigationBar(navController = navController, selectedItem = selectedItem) }
+        bottomBar = { BottomNavigationBar(navController = navController, selectedNavItem = selectedNavItem) }
     ) { innerPadding ->
         Box(
             modifier = Modifier
@@ -45,31 +50,67 @@ fun EditUser(navController: NavController) {
                     .fillMaxSize()
                     .padding(16.dp),
                 horizontalAlignment = Alignment.CenterHorizontally,
-                verticalArrangement = Arrangement.Center
+                verticalArrangement = Arrangement.Top
             ) {
                 var name by remember { mutableStateOf("Pepito Ramirez Foraneo") }
                 var description by remember { mutableStateOf("Abre tu menteeeeee 🧠") }
 
                 Text(
                     text = "Editar Perfil",
-                    fontSize = 24.sp,
+                    fontSize = 35.sp,
                     color = Color.White
                 )
                 Spacer(modifier = Modifier.height(16.dp))
 
-                //Campo para poder editar próximamente el nombre
+                // Imagen de perfil con botón de edición
+                Box(
+                    contentAlignment = Alignment.BottomEnd,
+                    modifier = Modifier
+                        .size(150.dp)
+                ) {
+                    Image(
+                        painter = painterResource(id = R.drawable.auron),
+                        contentDescription = "Profile Picture",
+                        modifier = Modifier
+                            .size(150.dp)
+                            .clip(CircleShape)
+                            .border(2.dp, Color.White, CircleShape)
+                    )
+
+                    // Botón de edición (ícono de lápiz)
+                    IconButton(
+                        onClick = { },
+                        modifier = Modifier
+                            .size(55.dp)
+                            .clip(CircleShape)
+                            .border(3.dp, Color.White, CircleShape)
+                            .background(colorResource(id = R.color.jellybean))
+                    ) {
+                        Icon(
+                            imageVector = Icons.Default.Edit,
+                            contentDescription = "Edit",
+                            tint = Color.White,
+
+                        )
+                    }
+                }
+
+                Spacer(modifier = Modifier.height(16.dp))
+
+                // Campo para editar el nombre
                 BasicTextField(
                     value = name,
                     onValueChange = { name = it },
                     textStyle = LocalTextStyle.current.copy(color = Color.White),
                     modifier = Modifier
+
                         .fillMaxWidth()
-                        .padding(16.dp)
+                        .padding(15.dp)
                         .background(Color.Gray.copy(alpha = 0.2f), shape = MaterialTheme.shapes.small)
                         .padding(8.dp)
                 )
 
-                // Campo para editar próximamente la descripción
+                // Campo para editar la descripción
                 BasicTextField(
                     value = description,
                     onValueChange = { description = it },
@@ -83,7 +124,7 @@ fun EditUser(navController: NavController) {
 
                 Spacer(modifier = Modifier.height(16.dp))
 
-                // Botón para guardar los cambios y regresar
+                // Botón para guardar los cambios
                 Button(
                     onClick = {
                         navController.popBackStack()
@@ -92,7 +133,10 @@ fun EditUser(navController: NavController) {
                         containerColor = colorResource(id = R.color.jellybean)
                     )
                 ) {
-                    Text(text = "Guardar Cambios", color = Color.White)
+                    Text(
+                        text = "Guardar Cambios",
+                        color = Color.White,
+                        fontSize = 20.sp)
                 }
             }
         }
@@ -100,7 +144,7 @@ fun EditUser(navController: NavController) {
 }
 
 @Composable
-fun BottomNavigationBar(navController: NavController, selectedItem: MutableState<Int>) {
+fun BottomNavigationBar(navController: NavController, selectedNavItem: MutableState<Int>) {
     NavigationBar(
         containerColor = colorResource(id = R.color.darkMidnightBlue)
     ) {
@@ -114,9 +158,9 @@ fun BottomNavigationBar(navController: NavController, selectedItem: MutableState
 
         items.forEachIndexed { index, item ->
             NavigationBarItem(
-                selected = selectedItem.value == index,
+                selected = selectedNavItem.value == index,
                 onClick = {
-                    selectedItem.value = index
+                    selectedNavItem.value = index
                     val route = when (item.label) {
                         "Home" -> "Menu"
                         "Groups" -> "Groups"
@@ -131,7 +175,7 @@ fun BottomNavigationBar(navController: NavController, selectedItem: MutableState
                     Icon(
                         imageVector = item.icon,
                         contentDescription = item.label,
-                        tint = if (selectedItem.value == index) colorResource(id = R.color.jellybean) else Color.White
+                        tint = if (selectedNavItem.value == index) colorResource(id = R.color.jellybean) else Color.White
                     )
                 },
                 label = {
@@ -144,3 +188,4 @@ fun BottomNavigationBar(navController: NavController, selectedItem: MutableState
         }
     }
 }
+
