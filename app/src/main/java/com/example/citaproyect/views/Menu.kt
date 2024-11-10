@@ -49,7 +49,10 @@ fun Menu(navController: NavController) {
         GroupsModel("Ciencia y Tecnología", R.drawable.ciencias, "Un laboratorio de ideas donde la innovación y el descubrimiento son la norma. ¡Únete a nosotros!", "Reglas: No contenido +18, Respeto entre miembros, Asistencia a las sesiones."),
         GroupsModel("Arte y Diseño", R.drawable.arte, "Un refugio creativo donde las ideas florecen y la imaginación no tiene límites. ¡Deja que tu talento brille!", "Reglas: No contenido +18, Respeto entre miembros, Asistencia a las sesiones."),
         GroupsModel("Aventuras al Aire Libre", R.drawable.aire, "Un grupo de exploradores que buscan la adrenalina y la emoción en cada rincón de la naturaleza.", "Reglas: No contenido +18, Respeto entre miembros, Asistencia a las sesiones."),
-        GroupsModel("Música y Expresión", R.drawable.music, "Un coro de voces donde la creatividad y la armonía se unen para celebrar el arte de la música.", "Reglas: No contenido +18, Respeto entre miembros, Asistencia a las sesiones.")
+        GroupsModel("Música y Expresión", R.drawable.music, "Un coro de voces donde la creatividad y la armonía se unen para celebrar el arte de la música.", "Reglas: No contenido +18, Respeto entre miembros, Asistencia a las sesiones."),
+        GroupsModel("Literatura y Escritura", R.drawable.lit, "Un santuario de letras donde las historias cobran vida y la escritura es una aventura compartida.", "Reglas: No contenido +18, Respeto entre miembros, Asistencia a las sesiones."),
+        GroupsModel("Salud y Bienestar", R.drawable.heailty, "Un grupo dedicado a promover la salud física y mental, compartiendo consejos y experiencias positivas.", "Reglas: No contenido +18, Respeto entre miembros, Asistencia a las sesiones."),
+        GroupsModel("Viajes y Exploración", R.drawable.viajes, "Un club de viajeros intrépidos listos para compartir historias y consejos sobre sus aventuras alrededor del mundo.", "Reglas: No contenido +18, Respeto entre miembros, Asistencia a las sesiones.")
     )
     Scaffold(
         bottomBar = {
@@ -149,7 +152,7 @@ fun Menu(navController: NavController) {
 
                         .horizontalScroll(rememberScrollState()),
                 ) {
-                    groups.take(4).forEach { groupItem ->
+                    groups.take(7).forEach { groupItem ->
                         GroupRowHorizontal(group = groupItem, navController)
                     }
                 }
@@ -263,15 +266,24 @@ fun GroupsRecomended(group: GroupsModel, navController: NavController) {
             },
         contentAlignment = Alignment.Center
     ) {
-        Image(
-            painter = painterResource(id = group.imageResId),
-            contentDescription = group.title,
+        Box(
             modifier = Modifier
                 .fillMaxHeight()
                 .fillMaxWidth()
-                .aspectRatio(16f / 9f)
-                .clip(RoundedCornerShape(25.dp))
-        )
+                .clip(RoundedCornerShape(30.dp)) // Aplicamos el redondeo en un contenedor
+                .background(Color.Gray) // Color de fondo para visualizar el área del contenedor
+        ) {
+            Image(
+                painter = painterResource(id = group.imageResId),
+                contentDescription = group.title,
+                modifier = Modifier
+                    .fillMaxHeight()
+                    .fillMaxWidth()
+                    .aspectRatio(16f / 9f) // Mantén el aspect ratio adecuado
+                    .clip(RoundedCornerShape(30.dp)) // Este clip asegura el redondeo de la imagen
+            )
+        }
+
         Text(
             text = group.title,
             style = MaterialTheme.typography.bodyLarge,
@@ -294,6 +306,7 @@ fun GroupsRecomended(group: GroupsModel, navController: NavController) {
         )
     }
 }
+
 
 
 @Composable
