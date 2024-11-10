@@ -66,6 +66,7 @@ dependencies {
     implementation("io.coil-kt:coil-compose:2.0.0")
     implementation("androidx.lifecycle:lifecycle-viewmodel-compose:2.6.1")
 
+    implementation ("com.google.accompanist:accompanist-permissions:0.30.1")
 
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)

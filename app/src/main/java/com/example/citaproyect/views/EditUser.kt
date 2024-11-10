@@ -1,13 +1,9 @@
 package com.example.citaproyect.views
 
 import android.content.Context
-import android.content.pm.PackageManager
 import android.graphics.Bitmap
 import android.net.Uri
-import android.util.Log
-import android.widget.Toast
 import androidx.activity.compose.rememberLauncherForActivityResult
-import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -25,12 +21,9 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.colorResource
-import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.platform.LocalContext
-import androidx.core.content.ContextCompat
 import androidx.core.content.FileProvider
 import androidx.navigation.NavController
 import coil.compose.rememberImagePainter
@@ -38,20 +31,39 @@ import com.example.citaproyect.R
 import com.example.citaproyect.models.data.NavigationItem
 import java.io.File
 import java.io.FileOutputStream
-import java.io.OutputStream
+import android.Manifest
+import androidx.compose.ui.text.TextStyle
+import androidx.compose.material.*
+import androidx.compose.material.icons.filled.Edit
+import com.google.accompanist.permissions.ExperimentalPermissionsApi
+import com.google.accompanist.permissions.rememberMultiplePermissionsState
+import androidx.compose.foundation.layout.Box
+import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.AlertDialog
+import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
+import androidx.compose.runtime.Composable
+import androidx.compose.ui.window.DialogProperties
 
 
+@OptIn(ExperimentalPermissionsApi::class)
 @Composable
 fun EditUser(navController: NavController) {
-    val selectedNavItem = remember { mutableStateOf(4) }
     val context = LocalContext.current
-
     var profileImageUri by remember { mutableStateOf<Uri?>(null) }
     var showImagePickerDialog by remember { mutableStateOf(false) }
-    var name by remember { mutableStateOf("Pepito Ramirez Foraneo") }
-    var description by remember { mutableStateOf("Abre tu menteeeeee 🧠") }
+    var name by remember { mutableStateOf("") }
+    var description by remember { mutableStateOf("") }
+    var selectedNavItem by remember { mutableStateOf(0) }
 
-    // Launcher para tomar una foto desde la cámara
+    // Configuración de permisos para cámara y galería
+    val permissions = listOf(
+        Manifest.permission.CAMERA,
+        Manifest.permission.READ_EXTERNAL_STORAGE
+    )
+    val permissionsState = rememberMultiplePermissionsState(permissions = permissions)
+
+    // Lanzador para tomar una foto desde la cámara
     val cameraLauncher = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.TakePicturePreview()
     ) { bitmap ->
@@ -60,32 +72,19 @@ fun EditUser(navController: NavController) {
         }
     }
 
-    // Launcher para seleccionar una imagen de la galería
+    // Lanzador para seleccionar una imagen de la galería
     val galleryLauncher = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.GetContent()
     ) { uri: Uri? ->
-        if (uri != null) {
-            profileImageUri = uri
-        }
-    }
-
-    // Lanzador para solicitar permisos
-    val permissionLauncher = rememberLauncherForActivityResult(
-        contract = ActivityResultContracts.RequestMultiplePermissions()
-    ) { permissions ->
-        val allGranted = permissions.entries.all { it.value }
-        if (allGranted) {
-            // Si todos los permisos están concedidos, mostrar el diálogo de selección de imagen
-            showImagePickerDialog = true
-            Toast.makeText(context, "Permisos concedidos", Toast.LENGTH_SHORT).show()
-        } else {
-            Toast.makeText(context, "Se necesitan permisos para cambiar la imagen", Toast.LENGTH_SHORT).show()
-        }
+        profileImageUri = uri
     }
 
     Scaffold(
         bottomBar = {
-            BottomNavigationBar(navController = navController, selectedNavItem = selectedNavItem)
+            BottomNavigationBar(
+                navController = navController,
+                selectedNavItem = remember { mutableStateOf(selectedNavItem) }
+            )
         }
     ) { innerPadding ->
         Box(
@@ -116,6 +115,7 @@ fun EditUser(navController: NavController) {
                 )
                 Spacer(modifier = Modifier.height(16.dp))
 
+                // Imagen de perfil con botón de edición
                 Box(
                     contentAlignment = Alignment.BottomEnd,
                     modifier = Modifier.size(150.dp)
@@ -129,21 +129,13 @@ fun EditUser(navController: NavController) {
                             .border(2.dp, Color.White, CircleShape)
                     )
 
+                    // Botón para editar la imagen de perfil
                     IconButton(
                         onClick = {
-                            // Verifica si los permisos ya están concedidos
-                            if (ContextCompat.checkSelfPermission(context, android.Manifest.permission.CAMERA) == PackageManager.PERMISSION_GRANTED &&
-                                ContextCompat.checkSelfPermission(context, android.Manifest.permission.READ_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED) {
-                                // Si están concedidos, muestra el diálogo
+                            if (permissionsState.allPermissionsGranted) {
                                 showImagePickerDialog = true
                             } else {
-                                // Si no están concedidos, solicita los permisos
-                                permissionLauncher.launch(
-                                    arrayOf(
-                                        android.Manifest.permission.CAMERA,
-                                        android.Manifest.permission.READ_EXTERNAL_STORAGE
-                                    )
-                                )
+                                permissionsState.launchMultiplePermissionRequest()
                             }
                         },
                         modifier = Modifier
@@ -161,10 +153,11 @@ fun EditUser(navController: NavController) {
 
                 Spacer(modifier = Modifier.height(16.dp))
 
+                // Campo para editar el nombre
                 BasicTextField(
                     value = name,
                     onValueChange = { name = it },
-                    textStyle = LocalTextStyle.current.copy(color = Color.White),
+                    textStyle = TextStyle(color = Color.White, fontSize = 18.sp),
                     modifier = Modifier
                         .fillMaxWidth()
                         .padding(15.dp)
@@ -175,10 +168,11 @@ fun EditUser(navController: NavController) {
                         .padding(8.dp)
                 )
 
+                // Campo para editar la descripción
                 BasicTextField(
                     value = description,
                     onValueChange = { description = it },
-                    textStyle = LocalTextStyle.current.copy(color = Color.White),
+                    textStyle = TextStyle(color = Color.White, fontSize = 18.sp),
                     modifier = Modifier
                         .fillMaxWidth()
                         .padding(16.dp)
@@ -205,48 +199,48 @@ fun EditUser(navController: NavController) {
         }
     }
 
+    // Mostrar el diálogo de selección de imagen solo si los permisos están concedidos
     if (showImagePickerDialog) {
         ShowImagePickerDialog(
-            cameraLauncher = cameraLauncher,
-            galleryLauncher = galleryLauncher,
+            cameraLauncher = { cameraLauncher.launch(null) },
+            galleryLauncher = { galleryLauncher.launch("image/*") },
             onDismiss = { showImagePickerDialog = false }
         )
     }
+
 }
 
 @Composable
 fun ShowImagePickerDialog(
-    cameraLauncher: ActivityResultLauncher<Void?>,
-    galleryLauncher: ActivityResultLauncher<String>,
+    cameraLauncher: () -> Unit,
+    galleryLauncher: () -> Unit,
     onDismiss: () -> Unit
 ) {
     AlertDialog(
-        onDismissRequest = { onDismiss() },
-        title = { Text(text = "Seleccionar Imagen") },
-        text = { Text(text = "Elige una opción para seleccionar una imagen.") },
+        onDismissRequest = onDismiss,
         confirmButton = {
-            Button(
-                onClick = {
-                    onDismiss()
-                    cameraLauncher.launch(null)
-                }
-            ) {
-                Text("Abrir Cámara")
+            TextButton(onClick = {
+                cameraLauncher()
+                onDismiss()
+            }) {
+                Text("Tomar Foto") // Texto del botón para tomar foto
             }
         },
         dismissButton = {
-            Button(
-                onClick = {
-                    onDismiss()
-                    galleryLauncher.launch("image/*")
-                }
-            ) {
-                Text("Abrir Galería")
+            TextButton(onClick = {
+                galleryLauncher()
+                onDismiss()
+            }) {
+                Text("Seleccionar desde Galería") // Texto del botón para la galería
             }
-        }
+        },
+        title = { Text("Selecciona una opción") },
+        text = { Text("Elige si deseas tomar una foto o seleccionar desde la galería") },
+        properties = DialogProperties()
     )
 }
 
+// Función para guardar el bitmap de la cámara en un archivo temporal
 fun saveBitmapToFile(bitmap: Bitmap, context: Context): Uri? {
     val filename = "profile_picture.jpg"
     val file = File(context.cacheDir, filename)
@@ -261,6 +255,11 @@ fun saveBitmapToFile(bitmap: Bitmap, context: Context): Uri? {
         null
     }
 }
+
+
+
+
+
 
 
 
@@ -311,25 +310,7 @@ fun BottomNavigationBar(navController: NavController, selectedNavItem: MutableSt
     }
 }
 
-/*
-@Composable
-fun RequestPermissions(
-    context: Context,
-    permissionLauncher: ActivityResultLauncher<Array<String>>,
-    action: @Composable () -> Unit
-) {
-    // Solicita permisos de cámara y almacenamiento
-    permissionLauncher.launch(
-        arrayOf(
-            android.Manifest.permission.CAMERA,
-            android.Manifest.permission.READ_EXTERNAL_STORAGE,
-            android.Manifest.permission.WRITE_EXTERNAL_STORAGE
-        )
-    )
 
-    // Ejecuta la acción en un contexto @Composable después de solicitar permisos
-    action()
-}*/
 
 
 
