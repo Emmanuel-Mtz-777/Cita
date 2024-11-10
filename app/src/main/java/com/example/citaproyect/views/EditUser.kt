@@ -1,6 +1,7 @@
 package com.example.citaproyect.views
 
 import android.content.Context
+import android.content.pm.PackageManager
 import android.graphics.Bitmap
 import android.net.Uri
 import android.util.Log
@@ -29,6 +30,7 @@ import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.platform.LocalContext
+import androidx.core.content.ContextCompat
 import androidx.core.content.FileProvider
 import androidx.navigation.NavController
 import coil.compose.rememberImagePainter
@@ -38,12 +40,12 @@ import java.io.File
 import java.io.FileOutputStream
 import java.io.OutputStream
 
+
 @Composable
 fun EditUser(navController: NavController) {
     val selectedNavItem = remember { mutableStateOf(4) }
     val context = LocalContext.current
 
-    // Variables para el estado de la imagen de perfil
     var profileImageUri by remember { mutableStateOf<Uri?>(null) }
     var showImagePickerDialog by remember { mutableStateOf(false) }
     var name by remember { mutableStateOf("Pepito Ramirez Foraneo") }
@@ -67,13 +69,15 @@ fun EditUser(navController: NavController) {
         }
     }
 
-    // Launcher para solicitar permisos
+    // Lanzador para solicitar permisos
     val permissionLauncher = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.RequestMultiplePermissions()
     ) { permissions ->
         val allGranted = permissions.entries.all { it.value }
         if (allGranted) {
+            // Si todos los permisos están concedidos, mostrar el diálogo de selección de imagen
             showImagePickerDialog = true
+            Toast.makeText(context, "Permisos concedidos", Toast.LENGTH_SHORT).show()
         } else {
             Toast.makeText(context, "Se necesitan permisos para cambiar la imagen", Toast.LENGTH_SHORT).show()
         }
@@ -112,12 +116,10 @@ fun EditUser(navController: NavController) {
                 )
                 Spacer(modifier = Modifier.height(16.dp))
 
-                // Imagen de perfil con botón de edición
                 Box(
                     contentAlignment = Alignment.BottomEnd,
                     modifier = Modifier.size(150.dp)
                 ) {
-                    // Muestra la imagen de perfil actual o una imagen predeterminada
                     Image(
                         painter = rememberImagePainter(data = profileImageUri ?: R.drawable.auron),
                         contentDescription = "Profile Picture",
@@ -127,16 +129,22 @@ fun EditUser(navController: NavController) {
                             .border(2.dp, Color.White, CircleShape)
                     )
 
-                    // Botón de edición (ícono de lápiz)
                     IconButton(
                         onClick = {
-                            // Solicita permisos cuando se presiona el ícono de lápiz
-                            permissionLauncher.launch(
-                                arrayOf(
-                                    android.Manifest.permission.CAMERA,
-                                    android.Manifest.permission.READ_EXTERNAL_STORAGE
+                            // Verifica si los permisos ya están concedidos
+                            if (ContextCompat.checkSelfPermission(context, android.Manifest.permission.CAMERA) == PackageManager.PERMISSION_GRANTED &&
+                                ContextCompat.checkSelfPermission(context, android.Manifest.permission.READ_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED) {
+                                // Si están concedidos, muestra el diálogo
+                                showImagePickerDialog = true
+                            } else {
+                                // Si no están concedidos, solicita los permisos
+                                permissionLauncher.launch(
+                                    arrayOf(
+                                        android.Manifest.permission.CAMERA,
+                                        android.Manifest.permission.READ_EXTERNAL_STORAGE
+                                    )
                                 )
-                            )
+                            }
                         },
                         modifier = Modifier
                             .size(55.dp)
@@ -153,7 +161,6 @@ fun EditUser(navController: NavController) {
 
                 Spacer(modifier = Modifier.height(16.dp))
 
-                // Campos de texto de edición
                 BasicTextField(
                     value = name,
                     onValueChange = { name = it },
@@ -198,7 +205,6 @@ fun EditUser(navController: NavController) {
         }
     }
 
-    // Mostrar el cuadro de diálogo de selección de imagen
     if (showImagePickerDialog) {
         ShowImagePickerDialog(
             cameraLauncher = cameraLauncher,
@@ -241,7 +247,6 @@ fun ShowImagePickerDialog(
     )
 }
 
-// Función para guardar Bitmap en un archivo y obtener un Uri
 fun saveBitmapToFile(bitmap: Bitmap, context: Context): Uri? {
     val filename = "profile_picture.jpg"
     val file = File(context.cacheDir, filename)
@@ -256,6 +261,7 @@ fun saveBitmapToFile(bitmap: Bitmap, context: Context): Uri? {
         null
     }
 }
+
 
 
 
