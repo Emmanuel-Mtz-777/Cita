@@ -4,30 +4,14 @@ import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.horizontalScroll
-import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.aspectRatio
-import androidx.compose.foundation.layout.fillMaxHeight
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.*
 import androidx.compose.material3.*
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
+import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -53,7 +37,10 @@ fun Menu(navController: NavController) {
         GroupsModel("Literatura y Escritura", R.drawable.lit, "Un santuario de letras donde las historias cobran vida y la escritura es una aventura compartida.", "Reglas: No contenido +18, Respeto entre miembros, Asistencia a las sesiones."),
         GroupsModel("Salud y Bienestar", R.drawable.heailty, "Un grupo dedicado a promover la salud física y mental, compartiendo consejos y experiencias positivas.", "Reglas: No contenido +18, Respeto entre miembros, Asistencia a las sesiones."),
         GroupsModel("Viajes y Exploración", R.drawable.viajes, "Un club de viajeros intrépidos listos para compartir historias y consejos sobre sus aventuras alrededor del mundo.", "Reglas: No contenido +18, Respeto entre miembros, Asistencia a las sesiones.")
+
+
     )
+
     Scaffold(
         bottomBar = {
             NavigationBar(
@@ -73,14 +60,13 @@ fun Menu(navController: NavController) {
                         onClick = {
                             if (selectedItem.value != index) {
                                 selectedItem.value = index
-                                // Navegar a la pantalla correspondiente
                                 val route = when (item.label) {
-                                    "Home" -> "Menu"      // Pantalla de inicio
-                                    "Groups" -> "Groups"  // Pantalla de grupos
-                                    "Chats" -> "Chats"    // Pantalla de chats
-                                    "Events" -> "Events"  // Pantalla de eventos
-                                    "User" -> "User"      // Pantalla de usuario
-                                    else -> "Menu"        // Por defecto a la pantalla de menú
+                                    "Home" -> "Menu"
+                                    "Groups" -> "Groups"
+                                    "Chats" -> "Chats"
+                                    "Events" -> "Events"
+                                    "User" -> "User"
+                                    else -> "Menu"
                                 }
                                 navController.navigate(route) {
                                     popUpTo(navController.graph.startDestinationId) {
@@ -126,11 +112,10 @@ fun Menu(navController: NavController) {
             Column(
                 modifier = Modifier
                     .fillMaxSize()
-                    .fillMaxWidth()
-                    .verticalScroll(rememberScrollState()), // Añadir el modificador verticalScroll
+                    .verticalScroll(rememberScrollState()),
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
-                navbar()
+                Navbar()
                 Text(
                     text = "Nuevos Anuncios",
                     style = MaterialTheme.typography.headlineMedium,
@@ -144,20 +129,18 @@ fun Menu(navController: NavController) {
                     color = Color.White,
                     modifier = Modifier.padding(8.dp)
                 )
-
                 Row(
                     modifier = Modifier
                         .fillMaxWidth()
                         .padding(5.dp)
-
-                        .horizontalScroll(rememberScrollState()),
+                        .horizontalScroll(rememberScrollState())
                 ) {
                     groups.take(7).forEach { groupItem ->
                         GroupRowHorizontal(group = groupItem, navController)
                     }
                 }
                 Text(
-                    text = "Encuestas recientes   ",
+                    text = "Encuestas recientes",
                     style = MaterialTheme.typography.headlineMedium,
                     color = Color.White,
                     modifier = Modifier.padding(8.dp)
@@ -172,9 +155,8 @@ data class BottomNavItem(val label: String, val icon: ImageVector)
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun navbar() {
+fun Navbar() {
     var searchText by remember { mutableStateOf(TextFieldValue()) }
-
     val navbarColor = colorResource(id = R.color.black).copy(alpha = 0.3f)
 
     Box(
@@ -183,38 +165,33 @@ fun navbar() {
             .background(color = navbarColor)
             .padding(10.dp)
     ) {
-        Column(
-            modifier = Modifier.fillMaxWidth()
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(vertical = 8.dp)
         ) {
-            Row(
+            TextField(
+                value = searchText,
+                onValueChange = { searchText = it },
+                placeholder = { Text("Buscar...") },
+                colors = TextFieldDefaults.textFieldColors(
+                    containerColor = navbarColor,
+                    cursorColor = Color.White,
+                    focusedIndicatorColor = Color.Transparent,
+                    unfocusedIndicatorColor = Color.Transparent
+                ),
                 modifier = Modifier
+                    .weight(1f)
+                    .padding(horizontal = 8.dp)
                     .fillMaxWidth()
-                    .padding(vertical = 8.dp)
-
-            ) {
-                TextField(
-                    value = searchText,
-                    onValueChange = { newText -> searchText = newText },
-                    placeholder = { Text("Buscar...") },
-                    colors = TextFieldDefaults.textFieldColors(
-                        containerColor = navbarColor,  // Usar el color con opacidad
-                        cursorColor = Color.White,
-                        focusedIndicatorColor = Color.Transparent,
-                        unfocusedIndicatorColor = Color.Transparent
-                    ),
-                    modifier = Modifier
-                        .weight(1f)
-                        .padding(horizontal = 8.dp)
-                        .fillMaxWidth()
-                        .background(color = navbarColor)
+                    .background(color = navbarColor)
+            )
+            IconButton(onClick = { /* acción de búsqueda */ }) {
+                Icon(
+                    imageVector = Icons.Filled.Search,
+                    contentDescription = "Buscar",
+                    tint = Color.White
                 )
-                IconButton(onClick = { }) {
-                    Icon(
-                        imageVector = Icons.Filled.Search,
-                        contentDescription = "Buscar",
-                        tint = Color.White
-                    )
-                }
             }
         }
     }
@@ -222,13 +199,11 @@ fun navbar() {
 
 @Composable
 fun EventsMenu(navController: NavController) {
-    // Una columna para organizar los dos eventos
     Column(
         modifier = Modifier
             .fillMaxWidth()
             .padding(16.dp)
     ) {
-        // Primer evento
         EventCard(
             title = "Conferencia sobre IA",
             description = "Publicado por: Facultad de Ciencias",
@@ -238,9 +213,7 @@ fun EventsMenu(navController: NavController) {
                 navController.navigate("EventDetail/ConferenciaIA/Publicado por: Facultad de Ciencias/01-04-25")
             }
         )
-        // Separación entre los eventos
         Spacer(modifier = Modifier.height(10.dp))
-        // Segundo evento
         EventCard(
             title = "Taller de Kotlin",
             description = "Publicado por: Club de Programación",
@@ -254,70 +227,12 @@ fun EventsMenu(navController: NavController) {
 }
 
 @Composable
-fun GroupsRecomended(group: GroupsModel, navController: NavController) {
-    var showDialog by remember { mutableStateOf(false) }
-
-    Box(
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(8.dp) // Espaciado entre tarjetas
-            .clickable {
-                showDialog = true
-            },
-        contentAlignment = Alignment.Center
-    ) {
-        Box(
-            modifier = Modifier
-                .fillMaxHeight()
-                .fillMaxWidth()
-                .clip(RoundedCornerShape(30.dp)) // Aplicamos el redondeo en un contenedor
-                .background(Color.Gray) // Color de fondo para visualizar el área del contenedor
-        ) {
-            Image(
-                painter = painterResource(id = group.imageResId),
-                contentDescription = group.title,
-                modifier = Modifier
-                    .fillMaxHeight()
-                    .fillMaxWidth()
-                    .aspectRatio(16f / 9f) // Mantén el aspect ratio adecuado
-                    .clip(RoundedCornerShape(30.dp)) // Este clip asegura el redondeo de la imagen
-            )
-        }
-
-        Text(
-            text = group.title,
-            style = MaterialTheme.typography.bodyLarge,
-            color = Color.White,
-            modifier = Modifier
-                .align(Alignment.TopCenter)
-                .padding(8.dp)
-                .background(
-                    Color.Black.copy(alpha = 0.5f),
-                    shape = MaterialTheme.shapes.medium
-                )
-                .padding(8.dp)
-        )
-    }
-
-    if (showDialog) {
-        JoinGroupDialog(
-            group = group,
-            onDismiss = { showDialog = false }
-        )
-    }
-}
-
-
-
-@Composable
 fun SurveyMenu(navController: NavController) {
-    // Una columna para organizar los dos eventos
     Column(
         modifier = Modifier
             .fillMaxWidth()
             .padding(16.dp)
     ) {
-
         SurveyCard(
             title = "Encuesta sobre tecnologías emergentes",
             description = "Participa en la encuesta sobre nuevas tecnologías.",
@@ -325,9 +240,7 @@ fun SurveyMenu(navController: NavController) {
                 navController.navigate("SurveyDetail/EncuestaTecnologiasEmergentes")
             }
         )
-        // Separación entre los eventos
         Spacer(modifier = Modifier.height(10.dp))
-        // Segundo evento
         SurveyCard(
             title = "Satisfacción del simposio",
             description = "Cuéntanos qué te pareció el simposio.",

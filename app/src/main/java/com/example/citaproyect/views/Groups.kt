@@ -132,7 +132,7 @@ fun Groups(navController: NavController) {
                     .padding(10.dp)
                     .verticalScroll(rememberScrollState())
             ) {
-                navbar()
+                Navbar()
                 // Título de grupos
                 Text(
                     text = "Mis grupos",
@@ -236,9 +236,7 @@ fun GroupGridItem(group: GroupsModel, navController: NavController) {
                 .fillMaxWidth()
                 .aspectRatio(16f / 9f)
                 .background(colorResource(id = R.color.prussianBlue), shape = MaterialTheme.shapes.medium)
-                .clip(MaterialTheme.shapes.medium) // Añadido para redondear los bordes
         )
-
         Text(
             text = group.title,
             style = MaterialTheme.typography.bodyLarge,
@@ -258,7 +256,6 @@ fun GroupGridItem(group: GroupsModel, navController: NavController) {
         )
     }
 }
-
 
 @Composable
 fun GroupDetailsDialog(navController: NavController, group: GroupsModel, onDismiss: () -> Unit) {

@@ -14,13 +14,14 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.asImageBitmap
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.unit.dp
-import androidx.core.net.toUri
+import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import coil.compose.rememberAsyncImagePainter
 import com.example.citaproyect.R
@@ -32,18 +33,17 @@ fun NewGroup(navController: NavController) {
     var description by remember { mutableStateOf("") }
     var rules by remember { mutableStateOf("") }
     var showConfirmation by remember { mutableStateOf(false) }
-    var selectedImageUri by remember { mutableStateOf<Uri?>(null) }
+    var selectedImageUri by rememberSaveable { mutableStateOf<Uri?>(null) }
 
     val imagePickerLauncher = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.GetContent(),
-        onResult = { uri ->
-            selectedImageUri = uri
-        }
+        onResult = { uri -> selectedImageUri = uri }
     )
 
     // Scroll state for vertical scrolling
     val scrollState = rememberScrollState()
 
+    // Check screen width to adjust layout for tablets and larger screens
     BoxWithConstraints(modifier = Modifier.fillMaxSize()) {
         val isCompact = maxWidth < 600.dp
 
@@ -51,7 +51,7 @@ fun NewGroup(navController: NavController) {
             modifier = Modifier
                 .fillMaxSize()
                 .background(color = colorResource(id = R.color.darkMidnightBlue))
-                .verticalScroll(scrollState)  // Enable vertical scrolling
+                .verticalScroll(scrollState)
                 .padding(top = if (isCompact) 8.dp else 16.dp),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
@@ -72,8 +72,8 @@ fun NewGroup(navController: NavController) {
 
             Box(
                 modifier = Modifier
-                    .fillMaxWidth(0.8f)
-                    .height(if (isCompact) 150.dp else 200.dp)
+                    .fillMaxWidth(if (isCompact) 0.9f else 0.7f) // Adjust width based on screen size
+                    .height(if (isCompact) 200.dp else 300.dp)
                     .background(Color.Gray)
                     .border(2.dp, Color.White)
                     .clickable { imagePickerLauncher.launch("image/*") },
@@ -83,7 +83,8 @@ fun NewGroup(navController: NavController) {
                     Image(
                         painter = rememberAsyncImagePainter(model = selectedImageUri),
                         contentDescription = "Imagen seleccionada",
-                        modifier = Modifier.fillMaxSize()
+                        modifier = Modifier.fillMaxSize(),
+                        contentScale = ContentScale.Crop
                     )
                 } else {
                     Text(text = "Imagen del grupo", color = Color.White)
@@ -94,9 +95,12 @@ fun NewGroup(navController: NavController) {
 
             Text(
                 text = "Crear Nuevo Grupo",
-                style = MaterialTheme.typography.headlineMedium,
+                style = MaterialTheme.typography.headlineMedium.copy(
+                    fontSize = if (isCompact) 20.sp else 28.sp // Adjust font size for different screens
+                ),
                 color = Color.White
             )
+
             Spacer(modifier = Modifier.height(if (isCompact) 16.dp else 24.dp))
 
             TextField(
@@ -111,8 +115,9 @@ fun NewGroup(navController: NavController) {
                     unfocusedLabelColor = Color.LightGray,
                     cursorColor = Color.White
                 ),
-                modifier = Modifier.fillMaxWidth(0.8f)
+                modifier = Modifier.fillMaxWidth(if (isCompact) 0.9f else 0.7f)
             )
+
             Spacer(modifier = Modifier.height(if (isCompact) 6.dp else 8.dp))
 
             TextField(
@@ -127,8 +132,9 @@ fun NewGroup(navController: NavController) {
                     unfocusedLabelColor = Color.LightGray,
                     cursorColor = Color.White
                 ),
-                modifier = Modifier.fillMaxWidth(0.8f)
+                modifier = Modifier.fillMaxWidth(if (isCompact) 0.9f else 0.7f)
             )
+
             Spacer(modifier = Modifier.height(if (isCompact) 6.dp else 8.dp))
 
             TextField(
@@ -143,8 +149,9 @@ fun NewGroup(navController: NavController) {
                     unfocusedLabelColor = Color.LightGray,
                     cursorColor = Color.White
                 ),
-                modifier = Modifier.fillMaxWidth(0.8f)
+                modifier = Modifier.fillMaxWidth(if (isCompact) 0.9f else 0.7f)
             )
+
             Spacer(modifier = Modifier.height(if (isCompact) 12.dp else 16.dp))
 
             Button(
@@ -153,7 +160,7 @@ fun NewGroup(navController: NavController) {
                     navController.navigate("Groups")
                 },
                 colors = ButtonDefaults.buttonColors(containerColor = Color.Transparent),
-                modifier = Modifier.fillMaxWidth(0.5f)
+                modifier = Modifier.fillMaxWidth(if (isCompact) 0.6f else 0.4f)
             ) {
                 Text("Guardar Grupo", color = Color.White)
             }
