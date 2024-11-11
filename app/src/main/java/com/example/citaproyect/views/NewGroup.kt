@@ -20,6 +20,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.colorResource
+import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
@@ -115,6 +116,7 @@ fun NewGroup(navController: NavController) {
                     unfocusedLabelColor = Color.LightGray,
                     cursorColor = Color.White
                 ),
+                textStyle = TextStyle(color = Color.White),
                 modifier = Modifier.fillMaxWidth(if (isCompact) 0.9f else 0.7f)
             )
 
@@ -132,6 +134,7 @@ fun NewGroup(navController: NavController) {
                     unfocusedLabelColor = Color.LightGray,
                     cursorColor = Color.White
                 ),
+                textStyle = TextStyle(color = Color.White),
                 modifier = Modifier.fillMaxWidth(if (isCompact) 0.9f else 0.7f)
             )
 
@@ -149,6 +152,7 @@ fun NewGroup(navController: NavController) {
                     unfocusedLabelColor = Color.LightGray,
                     cursorColor = Color.White
                 ),
+                textStyle = TextStyle(color = Color.White),
                 modifier = Modifier.fillMaxWidth(if (isCompact) 0.9f else 0.7f)
             )
 
