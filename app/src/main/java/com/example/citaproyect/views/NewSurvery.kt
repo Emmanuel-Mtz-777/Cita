@@ -2,6 +2,10 @@ package com.example.citaproyect.views
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -20,7 +24,31 @@ fun NewSurvey(navController: NavController) {
     var option1 by remember { mutableStateOf("") }
     var option2 by remember { mutableStateOf("") }
     var showConfirmation by remember { mutableStateOf(false) }
-
+    // Scroll state for vertical scrolling
+    val scrollState = rememberScrollState()
+    Column(
+        modifier = Modifier
+            .fillMaxSize()
+            .background(color = colorResource(id = R.color.darkMidnightBlue))
+            .verticalScroll(scrollState), // Enable vertical scrolling
+        verticalArrangement = Arrangement.Top,
+        horizontalAlignment = Alignment.Start
+    ) {
+        // Botón de regreso o salir
+        Button(
+            onClick = {
+                // Navega de regreso a la vista de eventos
+                navController.navigate("Events")
+            },
+            colors = ButtonDefaults.buttonColors(containerColor = Color.DarkGray),
+            modifier = Modifier.padding(16.dp)
+        ) {
+            Icon(
+                imageVector = Icons.Default.ArrowBack,
+                contentDescription = "Salir",
+                tint = Color.White
+            )
+        }
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -120,4 +148,4 @@ fun NewSurvey(navController: NavController) {
             Text(text = "Encuesta guardada con éxito", color = Color.White)
         }
     }
-}
+}}
