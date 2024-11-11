@@ -7,11 +7,24 @@ import android.os.Bundle
 import android.widget.Toast
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
+import androidx.compose.foundation.Image
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.*
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext // Asegúrate de importar LocalContext
+import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
@@ -85,8 +98,27 @@ fun ComposeMultiScreenApp(initialConnectionState: Boolean) {
 
 @Composable
 fun NoInternetScreen() {
-    Text(text = "No hay conexión a Internet. Conéctate para continuar.", color = Color.Red)
+    // Fondo gris completo
+    Surface(modifier = Modifier.fillMaxSize(), color = Color.White) {
+        Column(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(16.dp),
+            horizontalAlignment = Alignment.CenterHorizontally,
+            verticalArrangement = Arrangement.Center
+        ) {
+
+            Image(
+                painter = painterResource(id = R.drawable.nointernet), // Asegúrate de que la imagen esté en 'res/drawable'
+                contentDescription = "No Internet Connection",
+                modifier = Modifier
+                    .size(250.dp)
+                    .align(Alignment.CenterHorizontally)
+            )
+        }
+    }
 }
+
 
 @Composable
 fun setupNavGraph(navController: NavHostController) {
