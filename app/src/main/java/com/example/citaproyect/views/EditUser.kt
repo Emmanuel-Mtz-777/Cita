@@ -160,7 +160,7 @@ fun EditUser(navController: NavController) {
 
                 // Campo para editar el nombre
                 Text(
-                    text = "Editar Nombre:",
+                    text = "Editar Nombre: ",
                     fontSize = 25.sp,
                     color = Color.White
                 )
