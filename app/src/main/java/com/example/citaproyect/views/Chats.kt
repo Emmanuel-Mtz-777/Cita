@@ -141,8 +141,8 @@ fun ChatItem(chat: Chat, navController: NavController) {
             .shadow(8.dp, shape = MaterialTheme.shapes.medium) // Efecto flotante
             .background(color = Color.Transparent)
             .clickable {
-                // Navegar a la vista del chat seleccionado
-                navController.navigate("chatView/${chat.name}")
+                // Navegar a la vista del chat seleccionado y pasar el último mensaje
+                navController.navigate("chatView/${chat.name}/${chat.lastMessage}")
             }
             .animateContentSize(),
         elevation = CardDefaults.cardElevation(12.dp),
