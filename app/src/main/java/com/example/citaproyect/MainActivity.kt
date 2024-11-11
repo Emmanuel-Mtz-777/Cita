@@ -127,8 +127,8 @@ fun setupNavGraph(navController: NavHostController) {
         composable("EditUser") {
             EditUser(navController)
         }
-        composable("ChatView/{chatName}") { backStackEntry ->
-            ChatView(navBackStackEntry = backStackEntry)
+        composable("chatView/{chatName}/{lastMessage}") { backStackEntry ->
+            ChatView(navController = navController,navBackStackEntry = backStackEntry)
         }
 
         // Pantalla sin conexión
