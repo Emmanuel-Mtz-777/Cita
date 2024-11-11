@@ -40,11 +40,15 @@ import androidx.compose.ui.text.TextStyle
 import androidx.compose.material.icons.filled.Edit
 import com.google.accompanist.permissions.ExperimentalPermissionsApi
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.window.DialogProperties
 import androidx.core.content.ContextCompat
 import com.google.accompanist.permissions.isGranted
@@ -56,22 +60,20 @@ import com.google.accompanist.permissions.rememberPermissionState
 @Composable
 fun EditUser(navController: NavController) {
     val context = LocalContext.current
-    var profileImageUri by remember { mutableStateOf<Uri?>(null) }
     var showImagePickerDialog by remember { mutableStateOf(false) }
     var name by remember { mutableStateOf("") }
     var description by remember { mutableStateOf("") }
 
-    // Verificar si ya están concedidos los permisos
-    val cameraPermissionGranted = ContextCompat.checkSelfPermission(context, Manifest.permission.CAMERA) == PackageManager.PERMISSION_GRANTED
-    val storagePermissionGranted = ContextCompat.checkSelfPermission(context, Manifest.permission.READ_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED
-
+    // Usamos rememberSaveable para guardar y restaurar la URI de la imagen al cambiar de configuración
+    var profileImageUri by rememberSaveable { mutableStateOf<Uri?>(null) }
+    val cameraPermissionState = rememberPermissionState(Manifest.permission.CAMERA)
     // Lanzador para tomar una foto desde la cámara
     val cameraLauncher = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.TakePicturePreview()
     ) { bitmap ->
         if (bitmap != null) {
             val uri = saveImageToGallery(bitmap, context)
-            profileImageUri = uri
+            profileImageUri = uri // Guardar la URI de la imagen
         }
     }
 
@@ -79,7 +81,7 @@ fun EditUser(navController: NavController) {
     val galleryLauncher = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.GetContent()
     ) { uri: Uri? ->
-        profileImageUri = uri
+        profileImageUri = uri // Guardar la URI de la imagen
     }
 
     Scaffold(
@@ -106,7 +108,8 @@ fun EditUser(navController: NavController) {
             Column(
                 modifier = Modifier
                     .fillMaxSize()
-                    .padding(16.dp),
+                    .padding(16.dp)
+                    .verticalScroll(rememberScrollState()),
                 horizontalAlignment = Alignment.CenterHorizontally,
                 verticalArrangement = Arrangement.Top
             ) {
@@ -128,20 +131,14 @@ fun EditUser(navController: NavController) {
                         modifier = Modifier
                             .size(150.dp)
                             .clip(CircleShape)
-                            .border(2.dp, Color.White, CircleShape)
+                            .border(2.dp, Color.White, CircleShape),
+                        contentScale = ContentScale.Crop
                     )
 
                     // Botón para abrir el diálogo de selección de imagen
                     IconButton(
                         onClick = {
-                            // Si los permisos están concedidos, abrir la cámara o galería
-                            if (cameraPermissionGranted && storagePermissionGranted) {
-                                showImagePickerDialog = true
-                            } else {
-                                // Si los permisos no están concedidos, omitir la solicitud
-                                // Directamente abrir la cámara o la galería
-                                showImagePickerDialog = true
-                            }
+                            showImagePickerDialog = true // Mostrar el diálogo para seleccionar imagen
                         },
                         modifier = Modifier
                             .size(55.dp)
@@ -215,7 +212,7 @@ fun EditUser(navController: NavController) {
         }
     }
 
-    // Mostrar el diálogo de selección de imagen solo si los permisos están concedidos
+    // Mostrar el diálogo de selección de imagen
     if (showImagePickerDialog) {
         ShowImagePickerDialog(
             cameraLauncher = { cameraLauncher.launch(null) },
@@ -254,7 +251,6 @@ fun ShowImagePickerDialog(
     )
 }
 
-
 // Función para guardar la imagen en la galería
 fun saveImageToGallery(bitmap: Bitmap, context: Context): Uri? {
     val resolver = context.contentResolver
@@ -282,4 +278,3 @@ fun saveImageToGallery(bitmap: Bitmap, context: Context): Uri? {
 
     return imageUri
 }
-
