@@ -37,8 +37,6 @@ fun Menu(navController: NavController) {
         GroupsModel("Literatura y Escritura", R.drawable.lit, "Un santuario de letras donde las historias cobran vida y la escritura es una aventura compartida.", "Reglas: No contenido +18, Respeto entre miembros, Asistencia a las sesiones."),
         GroupsModel("Salud y Bienestar", R.drawable.heailty, "Un grupo dedicado a promover la salud física y mental, compartiendo consejos y experiencias positivas.", "Reglas: No contenido +18, Respeto entre miembros, Asistencia a las sesiones."),
         GroupsModel("Viajes y Exploración", R.drawable.viajes, "Un club de viajeros intrépidos listos para compartir historias y consejos sobre sus aventuras alrededor del mundo.", "Reglas: No contenido +18, Respeto entre miembros, Asistencia a las sesiones.")
-
-
     )
 
     Scaffold(
@@ -136,7 +134,7 @@ fun Menu(navController: NavController) {
                         .horizontalScroll(rememberScrollState())
                 ) {
                     groups.take(7).forEach { groupItem ->
-                        GroupRowHorizontal(group = groupItem, navController)
+                        GroupRoHorizontal(group = groupItem, navController)
                     }
                 }
                 Text(
@@ -246,6 +244,64 @@ fun SurveyMenu(navController: NavController) {
             description = "Cuéntanos qué te pareció el simposio.",
             onClick = {
                 navController.navigate("SurveyDetail/SatisfaccionDelSimposio")
+            }
+        )
+    }
+}
+
+@Composable
+fun GroupRoHorizontal(group: GroupsModel, navController: NavController) {
+    var showDialog by remember { mutableStateOf(false) } // Estado del modal
+
+    Box(
+        modifier = Modifier
+            .padding(8.dp)
+            .clip(RoundedCornerShape(8.dp))
+            .clickable { showDialog = true } // Muestra el modal al hacer clic
+    ) {
+        Column {
+            Image(
+                painter = painterResource(id = group.imageResId),
+                contentDescription = group.title,
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(150.dp)
+                    .clip(RoundedCornerShape(8.dp))
+            )
+            Text(
+                text = group.title,
+
+                color = Color.White,
+                modifier = Modifier.padding(top = 8.dp)
+            )
+        }
+    }
+
+    // Modal (AlertDialog) que tiene dos opciones
+    if (showDialog) {
+        AlertDialog(
+            onDismissRequest = { showDialog = false },
+            title = { Text(text = "Unirse al grupo") },
+            text = { Text(text = "¿Deseas solicitar unirte a este grupo?") },
+            confirmButton = {
+                Button(
+                    onClick = {
+                        // Acción para solicitar unirse al grupo
+                        showDialog = false // Cierra el modal
+                    }
+                ) {
+                    Text("Solicitar unirse")
+                }
+            },
+            dismissButton = {
+                Button(
+                    onClick = {
+                        // Cerrar el modal sin hacer nada
+                        showDialog = false
+                    }
+                ) {
+                    Text("Cancelar")
+                }
             }
         )
     }

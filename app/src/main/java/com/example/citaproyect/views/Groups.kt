@@ -280,7 +280,7 @@ fun GroupDetailsDialog(navController: NavController, group: GroupsModel, onDismi
         },
         confirmButton = {
             TextButton(onClick = {
-                navController.navigate("chatView/Groups chat") // Navegar al chat del grupo
+                navController.navigate("chatView/${group.title}/${group.description}") // Navegar al chat del grupo
                 onDismiss() // Cerrar el diálogo después de la navegación
             }) {
                 Text("Ver grupo")
