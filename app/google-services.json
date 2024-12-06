@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "442657939405",
+    "project_id": "citaf-d6d58",
+    "storage_bucket": "citaf-d6d58.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:442657939405:android:145ecf9e97047367b96e84",
+        "android_client_info": {
+          "package_name": "com.example.citaproyect"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDm0ETnMpRfRNg085Pp-g_CeGRQbFpZSq0"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

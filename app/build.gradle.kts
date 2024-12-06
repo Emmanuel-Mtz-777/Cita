@@ -1,6 +1,8 @@
 plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.jetbrains.kotlin.android)
+    id("com.google.devtools.ksp")
+    id ("com.google.gms.google-services")
 }
 
 android {
@@ -50,7 +52,9 @@ android {
 }
 
 dependencies {
-
+    implementation (platform("com.google.firebase:firebase-bom:33.6.0"))
+    implementation(libs.androidx.room.common)
+    implementation(libs.androidx.room.ktx)
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.lifecycle.runtime.ktx)
     implementation(libs.androidx.activity.compose)
@@ -71,4 +75,6 @@ dependencies {
     androidTestImplementation(libs.androidx.ui.test.junit4)
     debugImplementation(libs.androidx.ui.tooling)
     debugImplementation(libs.androidx.ui.test.manifest)
+    val room_version= "2.6.1"
+    ksp("androidx.room:room-compiler:$room_version")
 }
