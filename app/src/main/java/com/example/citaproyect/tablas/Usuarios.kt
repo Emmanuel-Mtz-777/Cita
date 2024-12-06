@@ -9,5 +9,6 @@ data class Usuario(
     val nombre: String,
     val email: String,
     val descripcion: String? = null, // Puede ser nulo
-    val foto: String? = null         // Puede ser nulo
+    val foto: String? = null,         // Puede ser nulo
+    val password: String
 )

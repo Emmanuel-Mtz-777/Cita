@@ -1,5 +1,6 @@
 package com.example.citaproyect.views
 
+import android.widget.Toast
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -13,6 +14,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.input.ImeAction
@@ -23,16 +25,23 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import com.example.citaproyect.R
-
+import com.example.citaproyect.network.RetrofitClient
+import com.example.citaproyect.tablas.Usuario
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 @Composable
 fun Login(navController: NavController) {
-    var username by remember { mutableStateOf("") }
+    var nombre by remember { mutableStateOf("") }
+    var email by remember { mutableStateOf("") }
     var password by remember { mutableStateOf("") }
-    var rememberMe by remember { mutableStateOf(false) }
-    var passwordVisible by remember { mutableStateOf(false) }
 
+    val scrollState = rememberScrollState()
 
-    val scrollState = rememberScrollState() //para que se pueda desplazar en la app
+    // Contexto adecuado para la base de datos
+    val context = LocalContext.current
+
     Box(
         modifier = Modifier
             .fillMaxSize()
@@ -42,40 +51,42 @@ fun Login(navController: NavController) {
     ) {
         Column(
             modifier = Modifier
-                .fillMaxWidth()  // Rellena todo el ancho disponible
-                .verticalScroll(scrollState),  // Habilita el desplazamiento vertical
+                .fillMaxWidth()
+                .verticalScroll(scrollState),
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.Center
         ) {
-            // Imagen del logo
-            Image(
-                painter = painterResource(id = R.drawable.logo2),
-                contentDescription = "Logo",
+            // Campo de entrada para el nombre
+            TextField(
+                value = nombre,
+                onValueChange = { nombre = it },
+                label = { Text("Nombre") },
                 modifier = Modifier
-                    .fillMaxWidth(0.5f)
-                    .aspectRatio(1f)
-                    .padding(bottom = 20.dp),
-                contentScale = ContentScale.Fit
+                    .background(Color.White)
+                    .fillMaxWidth(),
+                singleLine = true
             )
 
-            // Campo de texto para el nombre de usuario
+            Spacer(modifier = Modifier.height(16.dp))
+
+            // Campo de entrada para el email
             TextField(
-                value = username,
-                onValueChange = { username = it },
-                label = { Text("Username") },
+                value = email,
+                onValueChange = { email = it },
+                label = { Text("Email") },
                 modifier = Modifier
                     .background(Color.White)
                     .fillMaxWidth(),
                 singleLine = true,
                 keyboardOptions = KeyboardOptions.Default.copy(
-                    keyboardType = KeyboardType.Text,
+                    keyboardType = KeyboardType.Email,
                     imeAction = ImeAction.Done
                 )
             )
 
-            Spacer(modifier = Modifier.height(30.dp))
+            Spacer(modifier = Modifier.height(16.dp))
 
-            // Campo de texto para la contraseña
+            // Campo de entrada para la contraseña
             TextField(
                 value = password,
                 onValueChange = { password = it },
@@ -84,66 +95,49 @@ fun Login(navController: NavController) {
                     .background(Color.White)
                     .fillMaxWidth(),
                 singleLine = true,
-                visualTransformation = if (passwordVisible)
-                    VisualTransformation.None
-                else PasswordVisualTransformation(),
-                trailingIcon = {
-                    val image = if (passwordVisible)
-                        painterResource(id = android.R.drawable.ic_menu_view)
-                    else
-                        painterResource(id = android.R.drawable.ic_secure)
-
-                    Icon(
-                        painter = image,
-                        contentDescription = if (passwordVisible) "Hide password" else "Show password",
-                        modifier = Modifier
-                            .clickable { passwordVisible = !passwordVisible }
-                    )
-                },
+                visualTransformation = PasswordVisualTransformation(),
                 keyboardOptions = KeyboardOptions.Default.copy(
                     keyboardType = KeyboardType.Password,
                     imeAction = ImeAction.Done
                 )
             )
 
-            Spacer(modifier = Modifier.height(16.dp))
+            Spacer(modifier = Modifier.height(30.dp))
 
-            // Checkbox para "Remember me"
-            Row(
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                Checkbox(
-                    checked = rememberMe,
-                    onCheckedChange = { rememberMe = it }
-                )
-                Text(
-                    text = "Remember me",
-                    color = Color.White,
-                    fontSize = 25.sp
-                )
-            }
-
-            Spacer(modifier = Modifier.height(15.dp))
-
-            // Botón de "Sign in"
+            // Botón para iniciar sesión
             Button(
-                onClick = { navController.navigate("Menu") },
+                onClick = {
+                    if (nombre.isNotEmpty() && email.isNotEmpty() && password.isNotEmpty()) {
+                        // Validación y lógica de login
+                        // Aquí puedes agregar la lógica para autenticar al usuario con nombre, email y contraseña
+                        CoroutineScope(Dispatchers.IO).launch {
+                            // Ejemplo de inserción (si es necesario)
+                            // val usuario = Usuario(nombre = nombre, email = email, password = password)
+                            // DatabaseProvider.getInstance(context).ServiceDao().insertUsuario(usuario)
+
+                            // Mostrar mensaje de éxito
+                            withContext(Dispatchers.Main) {
+                                Toast.makeText(context, "Inicio de sesión exitoso", Toast.LENGTH_SHORT).show()
+                                navController.navigate("Menu") // Navegar al menú o pantalla deseada
+                            }
+                        }
+                    } else {
+                        Toast.makeText(context, "Todos los campos son obligatorios", Toast.LENGTH_SHORT).show()
+                    }
+                },
                 modifier = Modifier.fillMaxWidth()
             ) {
-                Text(
-                    text = "Sign in",
-                    fontSize = 23.sp
-                )
+                Text(text = "Iniciar Sesión", fontSize = 18.sp)
             }
 
-            Spacer(modifier = Modifier.height(15.dp))
+            Spacer(modifier = Modifier.height(16.dp))
 
-            // Texto para "Forgot password?"
+            // Otras opciones o mensajes
             Text(
-                text = "Forgot password?",
+                text = "¿No tienes cuenta? Regístrate",
                 color = colorResource(id = R.color.carolinaBlue),
-                fontSize = 20.sp,
-                modifier = Modifier.clickable {}
+                fontSize = 18.sp,
+                modifier = Modifier.clickable { /* Acción para registro */ }
             )
         }
     }

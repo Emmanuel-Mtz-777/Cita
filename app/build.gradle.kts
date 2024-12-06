@@ -67,7 +67,9 @@ dependencies {
     implementation(libs.androidx.navigation.runtime.ktx)
     implementation("io.coil-kt:coil-compose:2.1.0")
     implementation ("com.google.accompanist:accompanist-permissions:0.28.0")
-
+    //Retrofit
+    implementation("com.squareup.retrofit2:retrofit:2.9.0")
+    implementation("com.squareup.retrofit2:converter-gson:2.9.0")
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
