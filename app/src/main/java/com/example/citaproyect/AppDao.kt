@@ -13,8 +13,17 @@ interface ServiceDao {
     @Insert
     suspend fun insertUsuario(usuario: Usuario)
 
-    @Query("SELECT * FROM usuarios WHERE IdUsuario = :idUsuario")
-    suspend fun getUsuarioById(idUsuario: Int): Usuario?
+    @Query("SELECT * FROM Usuarios ORDER BY IdUsuario DESC LIMIT 5")
+    suspend fun getLastTenUsers(): List<Usuario>
+
+    @Query("SELECT * FROM usuarios WHERE IdUsuario = :usuarioId LIMIT 1")
+    suspend fun getUsuarioById(usuarioId: Int): Usuario?
+
+    @Query("SELECT * FROM Usuarios ORDER BY IdUsuario DESC LIMIT 1")
+    fun getLastUsuario(): Usuario?
+
+    @Query("SELECT * FROM usuarios")
+    suspend fun getAllUsuarios(): List<Usuario>
 
     @Update
     suspend fun updateUsuario(usuario: Usuario)

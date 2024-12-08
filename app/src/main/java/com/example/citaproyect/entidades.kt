@@ -13,8 +13,6 @@ data class Usuario(
     val foto: String? = null,         // Puede ser nulo
     val password: String
 )
-
-
 @Entity(
     tableName = "respuestas",
     foreignKeys = [

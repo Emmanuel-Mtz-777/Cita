@@ -1,5 +1,3 @@
-package com.example.citaproyect.views
-
 import android.widget.Toast
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -20,11 +18,11 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.PasswordVisualTransformation
-import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import androidx.room.Room
+import com.example.citaproyect.ApiService
 import com.example.citaproyect.AppDatabase
 import com.example.citaproyect.R
 import com.example.citaproyect.Usuario
@@ -32,23 +30,24 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import retrofit2.Retrofit
+import retrofit2.converter.gson.GsonConverterFactory
+import retrofit2.Response
+import retrofit2.http.Body
+import retrofit2.http.POST
 @Composable
 fun Login(navController: NavController) {
-    var nombre by remember { mutableStateOf("") }
-    var email by remember { mutableStateOf("") }
-    var password by remember { mutableStateOf("") }
     var isLoading by remember { mutableStateOf(false) }
-
-    val scrollState = rememberScrollState()
     val context = LocalContext.current
 
-    // Inicializar la base de datos y el DAO
+    // Inicializamos la base de datos
     val db = Room.databaseBuilder(
         context,
         AppDatabase::class.java, "app-database"
     ).build()
 
-    val serviceDao = db.ServiceDao()  // Obtener el ServiceDao
+    val serviceDao = db.ServiceDao() // Obtener el ServiceDao
+
 
     Box(
         modifier = Modifier
@@ -60,109 +59,37 @@ fun Login(navController: NavController) {
         Column(
             modifier = Modifier
                 .fillMaxWidth()
-                .verticalScroll(scrollState),
+                .verticalScroll(rememberScrollState()),
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.Center
         ) {
-            // Campo de entrada para el nombre
-            TextField(
-                value = nombre,
-                onValueChange = { nombre = it },
-                label = { Text("Nombre") },
-                modifier = Modifier
-                    .background(Color.White)
-                    .fillMaxWidth(),
-                singleLine = true
-            )
-
-            Spacer(modifier = Modifier.height(16.dp))
-
-            // Campo de entrada para el email
-            TextField(
-                value = email,
-                onValueChange = { email = it },
-                label = { Text("Email") },
-                modifier = Modifier
-                    .background(Color.White)
-                    .fillMaxWidth(),
-                singleLine = true,
-                keyboardOptions = KeyboardOptions.Default.copy(
-                    keyboardType = KeyboardType.Email,
-                    imeAction = ImeAction.Done
-                )
-            )
-
-            Spacer(modifier = Modifier.height(16.dp))
-
-            // Campo de entrada para la contraseña
-            TextField(
-                value = password,
-                onValueChange = { password = it },
-                label = { Text("Password") },
-                modifier = Modifier
-                    .background(Color.White)
-                    .fillMaxWidth(),
-                singleLine = true,
-                visualTransformation = PasswordVisualTransformation(),
-                keyboardOptions = KeyboardOptions.Default.copy(
-                    keyboardType = KeyboardType.Password,
-                    imeAction = ImeAction.Done
-                )
-            )
-
-            Spacer(modifier = Modifier.height(30.dp))
-
-            // Botón para iniciar sesión
+            // Botón para crear usuario
             Button(
                 onClick = {
-                    if (nombre.isNotEmpty() && email.isNotEmpty() && password.isNotEmpty()) {
-                        isLoading = true // Mostrar el indicador de carga
-                        CoroutineScope(Dispatchers.IO).launch {
-                            try {
-                                // Crear un nuevo usuario
-                                val usuario = Usuario(nombre = nombre, email = email, password = password)
-
-                                // Insertar el usuario en la base de datos
-                                serviceDao.insertUsuario(usuario)
-
-                                withContext(Dispatchers.Main) {
-                                    isLoading = false // Detener el indicador de carga
-                                    Toast.makeText(context, "Usuario insertado exitosamente", Toast.LENGTH_SHORT).show()
-                                    navController.navigate("Menu") // Navegar a la pantalla de menú
-                                }
-                            } catch (e: Exception) {
-                                withContext(Dispatchers.Main) {
-                                    isLoading = false
-                                    Toast.makeText(context, "Error al insertar el usuario", Toast.LENGTH_SHORT).show()
-                                }
-                            }
-                        }
-                    } else {
-                        Toast.makeText(context, "Todos los campos son obligatorios", Toast.LENGTH_SHORT).show()
-                    }
+                    navController.navigate("LoginCreateAcccount") // Cambia esta ruta según tu navegación
                 },
-                modifier = Modifier.fillMaxWidth(),
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(vertical = 8.dp),
                 enabled = !isLoading // Deshabilitar el botón mientras se procesa
             ) {
-                if (isLoading) {
-                    CircularProgressIndicator(
-                        modifier = Modifier.size(24.dp),
-                        color = Color.White
-                    )
-                } else {
-                    Text(text = "Iniciar Sesión", fontSize = 18.sp)
-                }
+                Text(text = "Crear Cuenta", fontSize = 18.sp)
             }
 
             Spacer(modifier = Modifier.height(16.dp))
 
-            // Otras opciones o mensajes
-            Text(
-                text = "¿No tienes cuenta? Regístrate",
-                color = colorResource(id = R.color.carolinaBlue),
-                fontSize = 18.sp,
-                modifier = Modifier.clickable { /* Acción para registro */ }
-            )
+            // Botón para loguearse (y también insertar el usuario)
+            Button(
+                onClick = {
+                    navController.navigate("LoginSesion") // Cambia esta ruta según tu navegación
+                },
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(vertical = 8.dp),
+                enabled = !isLoading // Deshabilitar el botón mientras se procesa
+            ) {
+                Text(text = "Iniciar Sesión", fontSize = 18.sp)
+            }
         }
     }
 }
