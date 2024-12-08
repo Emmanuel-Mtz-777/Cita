@@ -33,7 +33,7 @@ import com.example.citaproyect.models.data.GroupsModel
 
 @Composable
 fun Menu(navController: NavController, usuarioId: String?) {
-
+    Log.d("Menu", "usuarioId recibido: $usuarioId")
 
     val selectedItem = remember { mutableStateOf(0) }
     val groups = listOf(
@@ -63,24 +63,16 @@ fun Menu(navController: NavController, usuarioId: String?) {
                     NavigationBarItem(
                         selected = selectedItem.value == index,
                         onClick = {
-                            if (selectedItem.value != index) {
-                                selectedItem.value = index
-                                val route = when (item.label) {
-                                    "Home" -> "Menu/$usuarioId"
-                                    "Groups" ->  "Groups/$usuarioId"
-                                    "Chats" -> "Chats/$usuarioId"
-                                    "Events" -> "Events/$usuarioId"
-                                    "User" -> "User/$usuarioId"
-                                    else -> "Menu/$usuarioId"
-                                }
-                                navController.navigate(route) {
-                                    popUpTo(navController.graph.startDestinationId) {
-                                        saveState = true
-                                    }
-                                    launchSingleTop = true
-                                    restoreState = true
-                                }
+                            selectedItem.value = index
+                            val route = when (item.label) {
+                                "Home" -> "Menu/$usuarioId"
+                                "Groups" ->  "Groups/$usuarioId"
+                                "Chats" -> "Chats/$usuarioId"
+                                "Events" -> "Events/$usuarioId"
+                                "User" -> "User/$usuarioId"
+                                else -> "Menu/$usuarioId"
                             }
+                            navController.navigate(route)
                         },
                         icon = {
                             Icon(
@@ -92,7 +84,7 @@ fun Menu(navController: NavController, usuarioId: String?) {
                         label = {
                             Text(
                                 text = item.label,
-                                color = Color.White
+                                color = if (selectedItem.value == index) Color.White else Color.White
                             )
                         }
                     )

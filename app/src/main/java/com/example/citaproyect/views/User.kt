@@ -1,18 +1,12 @@
 package com.example.citaproyect.views
 
-import android.content.Context
-import android.net.ConnectivityManager
-import android.net.NetworkCapabilities
-import android.os.Bundle
 import android.util.Log
 import android.widget.Toast
-import androidx.activity.compose.setContent
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material.icons.filled.Home
 import androidx.compose.material.icons.filled.Info
 import androidx.compose.material.icons.filled.Person
@@ -25,37 +19,26 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.painter.Painter
-import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
-import androidx.navigation.NavHostController
-import androidx.navigation.compose.NavHost
-import androidx.navigation.compose.composable
-import androidx.navigation.compose.rememberNavController
 import androidx.room.Room
 import com.example.citaproyect.ApiService
 import com.example.citaproyect.AppDatabase
-import com.example.citaproyect.ComposeMultiScreenApp
 import com.example.citaproyect.R
-import com.example.citaproyect.Usuario
-import com.example.citaproyect.UsuarioViewModel
 import com.example.citaproyect.models.data.NavigationItem
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
-fun isNetworkAvailable(context: Context): Boolean {
-    val connectivityManager = context.getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
-    val network = connectivityManager.activeNetwork
-    val networkCapabilities = connectivityManager.getNetworkCapabilities(network)
-    return networkCapabilities != null && networkCapabilities.hasCapability(NetworkCapabilities.NET_CAPABILITY_INTERNET)
-}@Composable
+import com.example.citaproyect.views.utils.isNetworkAvailable
+
+
+@Composable
 fun User(navController: NavController, usuarioId: String?) {
+    Log.d("User", "usuarioId recibido: $usuarioId")
     val context = LocalContext.current
     val selectedItem = remember { mutableStateOf(4) }
 
