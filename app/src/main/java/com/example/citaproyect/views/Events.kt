@@ -84,7 +84,7 @@ fun Events(navController: NavController, usuarioId: String?) {
         floatingActionButton = {
             Column {
                 FloatingActionButton(
-                    onClick = { navController.navigate("NewEvents") },
+                    onClick = { navController.navigate("NewEvents/$usuarioId") },
                     containerColor = Color.White,
                     contentColor = colorResource(id = R.color.jellybean)
                 ) {
@@ -95,7 +95,7 @@ fun Events(navController: NavController, usuarioId: String?) {
                 }
                 Spacer(modifier = Modifier.height(16.dp))
                 FloatingActionButton(
-                    onClick = { navController.navigate("NewSurvey") },
+                    onClick = { navController.navigate("NewSurvey/$usuarioId") },
                     containerColor = Color.White,
                     contentColor = colorResource(id = R.color.jellybean)
                 ) {

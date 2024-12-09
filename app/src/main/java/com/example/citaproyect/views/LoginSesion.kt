@@ -32,18 +32,20 @@ import android.net.NetworkCapabilities
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.ArrowBack
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
+import androidx.navigation.NavBackStackEntry
 import com.example.citaproyect.R
+import com.example.citaproyect.views.utils.isNetworkAvailable
 
-fun isNetworkAvailables(context: Context): Boolean {
-    val connectivityManager = context.getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
-    val network = connectivityManager.activeNetwork ?: return false
-    val capabilities = connectivityManager.getNetworkCapabilities(network) ?: return false
-    return capabilities.hasTransport(NetworkCapabilities.TRANSPORT_WIFI) || capabilities.hasTransport(NetworkCapabilities.TRANSPORT_CELLULAR)
-}
+
+
 @Composable
 fun LoginSesion(navController: NavController) {
     var email by remember { mutableStateOf("") }
@@ -63,8 +65,7 @@ fun LoginSesion(navController: NavController) {
 
     Box(
         modifier = Modifier
-            .fillMaxSize() // Asegura que el Box ocupe toda la pantalla
-            .background(Color(0xFF1E1E1E)) // Fondo oscuro para el Box
+            .fillMaxSize()
             .background(
                 brush = Brush.verticalGradient(
                     colors = listOf(
@@ -76,21 +77,32 @@ fun LoginSesion(navController: NavController) {
                     )
                 )
             ),
-        contentAlignment = Alignment.Center
     ) {
+        IconButton(
+            onClick = {
+                navController.navigate("Login")
+            }
+        ) {
+            Icon(
+                imageVector = Icons.Default.ArrowBack,
+                contentDescription = "Regresar",
+                tint = Color.White
+            )
+        }
+
         Column(
             modifier = Modifier
-                .fillMaxSize() // Rellenar toda la pantalla
-                .padding(16.dp) // Padding general
-                .verticalScroll(rememberScrollState()), // Habilitar desplazamiento vertical
+                .fillMaxSize()
+                .padding(16.dp)
+                .verticalScroll(rememberScrollState()),
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.Center
         ) {
             Image(
-                painter = painterResource(id = R.drawable.logo2), // Asegúrate de tener logo.png en el directorio drawable
+                painter = painterResource(id = R.drawable.logo2),
                 contentDescription = "Logo",
                 modifier = Modifier
-                    .size(250.dp) // Tamaño del logo
+                    .size(250.dp)
                     .padding(bottom = 16.dp)
             )
 
@@ -145,13 +157,11 @@ fun LoginSesion(navController: NavController) {
 
             Button(
                 onClick = {
-                    // Verificar conexión a internet
-                    if (!isNetworkAvailables(context)) {
+                    if (!isNetworkAvailable(context)) {
                         Toast.makeText(context, "Por favor, conecta a internet", Toast.LENGTH_SHORT).show()
                         return@Button
                     }
 
-                    // Continuar con la llamada a la API
                     CoroutineScope(Dispatchers.IO).launch {
                         val response = apiService.obtenerUsuarios()
                         if (response.isSuccessful) {
@@ -175,7 +185,7 @@ fun LoginSesion(navController: NavController) {
                     }
                 },
                 modifier = Modifier
-                    .fillMaxWidth(0.5f) // El botón ocupa el 50% del ancho de la pantalla
+                    .fillMaxWidth(0.5f)
                     .padding(top = 16.dp)
             ) {
                 Text(text = "Inicia Sesión", fontSize = 18.sp)

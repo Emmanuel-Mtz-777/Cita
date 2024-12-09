@@ -29,7 +29,7 @@ import com.example.citaproyect.R
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun NewGroup(navController: NavController) {
+fun NewGroup(navController: NavController , usuarioId: String?) {
     var title by remember { mutableStateOf("") }
     var description by remember { mutableStateOf("") }
     var rules by remember { mutableStateOf("") }
@@ -161,7 +161,7 @@ fun NewGroup(navController: NavController) {
             Button(
                 onClick = {
                     showConfirmation = true
-                    navController.navigate("Groups")
+                    navController.navigate("Groups/$usuarioId")
                 },
                 colors = ButtonDefaults.buttonColors(containerColor = Color.Transparent),
                 modifier = Modifier.fillMaxWidth(if (isCompact) 0.6f else 0.4f)

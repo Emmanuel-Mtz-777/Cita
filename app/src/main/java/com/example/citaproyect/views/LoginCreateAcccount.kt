@@ -17,8 +17,12 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material3.Button
 import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
 import androidx.compose.runtime.Composable
@@ -38,6 +42,7 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.navigation.NavBackStackEntry
 import androidx.navigation.NavController
 import androidx.room.Room
 import com.example.citaproyect.ApiService
@@ -51,6 +56,9 @@ import kotlinx.coroutines.withContext
 import retrofit2.Response
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
+import com.example.citaproyect.views.utils.isNetworkAvailable
+
+
 @Composable
 fun LoginCreateAcccount(navController: NavController) {
     var nombre by remember { mutableStateOf("") }
@@ -89,8 +97,10 @@ fun LoginCreateAcccount(navController: NavController) {
                 )
             )
             .padding(16.dp),
-        contentAlignment = Alignment.Center
+        contentAlignment = Alignment.BottomStart
     ) {
+
+
         Column(
             modifier = Modifier
                 .fillMaxWidth()
@@ -166,6 +176,12 @@ fun LoginCreateAcccount(navController: NavController) {
             // Botón para crear cuenta
             Button(
                 onClick = {
+                    // Verificar conexión a internet
+                    if (!isNetworkAvailable(context)) {
+                        Toast.makeText(context, "Por favor, conecta a internet", Toast.LENGTH_SHORT).show()
+                        return@Button
+                    }
+
                     if (nombre.isNotEmpty() && email.isNotEmpty() && password.isNotEmpty()) {
                         isLoading = true // Mostrar el indicador de carga
                         CoroutineScope(Dispatchers.IO).launch {
@@ -224,6 +240,17 @@ fun LoginCreateAcccount(navController: NavController) {
             }
 
             Spacer(modifier = Modifier.height(16.dp))
+        }
+        IconButton(
+            onClick = {
+                navController.navigate("Login")
+            }
+        ) {
+            Icon(
+                imageVector = Icons.Default.ArrowBack,
+                contentDescription = "Regresar",
+                tint = Color.White
+            )
         }
     }
 }

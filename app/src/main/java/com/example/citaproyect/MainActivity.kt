@@ -82,15 +82,21 @@ fun setupNavGraph(navController: NavHostController) {
             User(navController, usuarioId)
         }
 
-        composable("NewGroup") {
-            NewGroup(navController)
+
+        composable("NewGroup/{usuarioId}") { backStackEntry ->
+            val usuarioId = backStackEntry.arguments?.getString("usuarioId")
+            NewGroup(navController, usuarioId)
         }
-        composable("NewEvents") {
-            NewEvents(navController)
+        composable("NewEvents/{usuarioId}") { backStackEntry ->
+            val usuarioId = backStackEntry.arguments?.getString("usuarioId")
+            NewEvents(navController, usuarioId)
         }
-        composable("NewSurvey") {
-            NewSurvey(navController)
+
+        composable("NewSurvey/{usuarioId}") { backStackEntry ->
+            val usuarioId = backStackEntry.arguments?.getString("usuarioId")
+            NewSurvey(navController, usuarioId)
         }
+
         composable("EventDetail/{title}/{description}/{date}") { backStackEntry ->
             EventDetail(navController = navController, navBackStackEntry = backStackEntry)
         }
