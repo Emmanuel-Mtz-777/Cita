@@ -29,7 +29,7 @@ import java.util.Calendar
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun NewEvents(navController: NavController) {
+fun NewEvents(navController: NavController, usuarioId: String?) {
     var title by remember { mutableStateOf("") }
     var description by remember { mutableStateOf("") }
     var date by remember { mutableStateOf("") }
@@ -56,7 +56,7 @@ fun NewEvents(navController: NavController) {
         Button(
             onClick = {
                 // Navega de regreso a la vista de eventos
-                navController.navigate("Events")
+                navController.navigate("Events/$usuarioId")
             },
             colors = ButtonDefaults.buttonColors(containerColor = Color.DarkGray),
             modifier = Modifier.padding(16.dp)
@@ -182,7 +182,7 @@ fun NewEvents(navController: NavController) {
                     // Lógica para guardar el evento
 
                     // Después de guardar, puedes volver a la vista de eventos
-                    navController.navigate("Events")
+                    navController.navigate("Events/$usuarioId")
                 },
                 colors = ButtonDefaults.buttonColors(containerColor = Color.Transparent)
             ) {

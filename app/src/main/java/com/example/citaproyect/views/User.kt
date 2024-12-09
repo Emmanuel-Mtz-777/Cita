@@ -1,12 +1,12 @@
 package com.example.citaproyect.views
 
-
+import android.util.Log
+import android.widget.Toast
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material.icons.filled.Home
 import androidx.compose.material.icons.filled.Info
 import androidx.compose.material.icons.filled.Person
@@ -19,30 +19,116 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.painter.Painter
-import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
-import androidx.navigation.NavHostController
-import androidx.navigation.compose.NavHost
-import androidx.navigation.compose.composable
-import androidx.navigation.compose.rememberNavController
+import androidx.room.Room
+import com.example.citaproyect.ApiService
+import com.example.citaproyect.AppDatabase
 import com.example.citaproyect.R
 import com.example.citaproyect.models.data.NavigationItem
+import retrofit2.Retrofit
+import retrofit2.converter.gson.GsonConverterFactory
+import com.example.citaproyect.views.utils.isNetworkAvailable
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import retrofit2.Callback
+
+
+import retrofit2.Call
+
+import retrofit2.Response
+
 
 @Composable
-fun User(navController: NavController) {
+fun User(navController: NavController, usuarioId: String?) {
+    Log.d("User", "usuarioId recibido: $usuarioId")
+    val context = LocalContext.current
     val selectedItem = remember { mutableStateOf(4) }
 
+    // Inicializar la base de datos y el DAO solo una vez
+    val db = remember { Room.databaseBuilder(context, AppDatabase::class.java, "app-database").build() }
+    val serviceDao = remember { db.ServiceDao() }
+
+    // Configurar Retrofit
+    val retrofit = remember {
+        Retrofit.Builder()
+            .baseUrl("http://10.0.2.2:5000/") // Cambia esta URL según tu servidor
+            .addConverterFactory(GsonConverterFactory.create())
+            .build()
+    }
+    val apiService = remember { retrofit.create(ApiService::class.java) }
+
+    // Estado para manejar el nombre del usuario, descripción y errores
+    var userName by remember { mutableStateOf("Cargando...") }
+    var userDescription by remember { mutableStateOf("Cargando descripción...") }
+    var userCareer by remember { mutableStateOf("Cargando carrera...") }
+    var userSemester by remember { mutableStateOf("Cargando semestre...") }
+    var errorMessage by remember { mutableStateOf<String?>(null) }
+
+    // Verificar conexión y obtener datos
+    LaunchedEffect(usuarioId) {
+        if (usuarioId != null) {
+            try {
+                // Verificar si hay acceso a internet
+                val isConnected = isNetworkAvailable(context)
+
+                if (isConnected) {
+                    // Intentar obtener los datos desde la API si hay conexión
+                    val response = apiService.obtenerUsuarioPorId(usuarioId)
+                    if (response.isSuccessful) {
+                        userName = response.body()?.nombre ?: "Usuario no encontrado"
+                        userDescription = response.body()?.descripcion ?: "Sin Descripcion"
+                        userCareer = response.body()?.email ?: "Sin Email"
+                        userSemester = response.body()?.foto ?: "Sin Foto"
+                    } else {
+                        errorMessage = "Error al obtener datos de la API"
+                        throw Exception("Error al obtener datos de la API")
+                    }
+                } else {
+                    // Si no hay acceso a internet, buscar en la base de datos local
+                    val localUser = serviceDao.getUsuarioById(usuarioId.toInt())
+                    if (localUser != null) {
+                        userName = localUser.nombre
+                        userDescription = localUser.descripcion ?: "Sin Descripcion"
+                        userCareer = localUser.email ?: "Sin Email"
+                        userSemester = localUser.foto ?: "Sin foto"
+                    } else {
+                        userName = "Usuario no encontrado en la base local"
+                        userDescription = "Descripción no disponible"
+                        errorMessage = "No hay conexión a Internet y el usuario no está en la base local"
+                    }
+                }
+            } catch (e: Exception) {
+                // En caso de error, mostrar un mensaje adecuado
+                if (errorMessage == null) {
+                    errorMessage = "Error al cargar los datos"
+                }
+                // Intentar buscar en la base de datos local si ocurre un error
+                val localUser = serviceDao.getUsuarioById(usuarioId.toInt())
+                userName = localUser?.nombre ?: "Usuario no encontrado en la base local"
+                userDescription = localUser?.descripcion ?: "Sin Descripcion"
+            }
+        } else {
+            userName = "Usuario desconocido"
+            userDescription = "Descripción no disponible"
+        }
+    }
+
+    // Mostrar el Toast si hay un error
+    if (errorMessage != null) {
+        Toast.makeText(context, errorMessage, Toast.LENGTH_LONG).show()
+    }
+
+    // El resto de tu código para mostrar la UI
     Scaffold(
         bottomBar = {
-            NavigationBar(
-                containerColor = colorResource(id = R.color.darkMidnightBlue)
-            ) {
+            NavigationBar(containerColor = colorResource(id = R.color.darkMidnightBlue)) {
                 val items = listOf(
                     NavigationItem("Home", Icons.Filled.Home),
                     NavigationItem("Groups", Icons.Filled.Search),
@@ -56,14 +142,13 @@ fun User(navController: NavController) {
                         selected = selectedItem.value == index,
                         onClick = {
                             selectedItem.value = index
-
                             val route = when (item.label) {
-                                "Home" -> "Menu"
-                                "Groups" -> "Groups"
-                                "Chats" -> "Chats"
-                                "Events" -> "Events"
-                                "User" -> "User"
-                                else -> "Groups"
+                                "Home" -> "Menu/$usuarioId"
+                                "Groups" -> "Groups/$usuarioId"
+                                "Chats" -> "Chats/$usuarioId"
+                                "Events" -> "Events/$usuarioId"
+                                "User" -> "User/$usuarioId"
+                                else -> "Menu/$usuarioId"
                             }
                             navController.navigate(route)
                         },
@@ -115,7 +200,7 @@ fun User(navController: NavController) {
                 ) {
                     Image(
                         painter = painterResource(id = R.drawable.auron),
-                        contentDescription = "User Profile Picture",
+                        contentDescription = "Imagen de perfil",
                         modifier = Modifier
                             .size(120.dp)
                             .clip(CircleShape),
@@ -123,47 +208,76 @@ fun User(navController: NavController) {
                     )
                 }
 
+                // Nombre de usuario
                 Text(
-                    text = "Pepito Ramirez Foraneo",
+                    text = userName,
                     fontSize = 22.sp,
-                    color = Color.White
+                    color = Color.White,
+                    modifier = Modifier.padding(top = 16.dp)
                 )
+
+                // ID del usuario
                 Text(
-                    text = "21151909",
-                    fontSize = 20.sp,
-                    color = Color.White
+                    text = "ID: $usuarioId",
+                    fontSize = 18.sp,
+                    color = Color.White,
+                    modifier = Modifier.padding(top = 8.dp)
                 )
 
-                Spacer(modifier = Modifier.height(16.dp))
+
+                // Información adicional (Email, Foto)
+                ProfileInfoField(label = "Descripcion:", info = userDescription)
+                ProfileInfoField(label = "Email:", info = userCareer)
 
 
-                ProfileInfoField(label = "Carrera:", info = "Ingeniería Gestión Empresarial")
-                ProfileInfoField(label = "Semestre:", info = "3ro")
-                ProfileInfoField(label = "Descripción:", info = "Abre tu menteeeeee \uD83D\uDED0")
-
-                Spacer(modifier = Modifier.height(16.dp))
-
-                Row(
-                    horizontalArrangement = Arrangement.spacedBy(8.dp),
-                    modifier = Modifier.fillMaxWidth(),
-                    verticalAlignment = Alignment.CenterVertically
-                ) {
-                    Chip(label = "Malinche")
-                    Chip(label = "BTS")
-                }
-
-                Spacer(modifier = Modifier.height(16.dp))
-
+                // Botón para editar perfil
                 Button(
                     onClick = {
-                        navController.navigate("EditUser")
+                        navController.navigate("EditUser/$usuarioId") // Ruta de edición
                     },
-                    colors = ButtonDefaults.buttonColors(
-                        colorResource(id = R.color.jellybean)
-                    ),
+                    modifier = Modifier.padding(top = 32.dp)
                 ) {
-                    Text(text = "Editar Perfil", fontSize = 18.sp)
+                    Text("Editar Perfil")
                 }
+                Button(
+                    onClick = {
+                        navController.navigate("Login") // Ruta para cerrar sesión y redirigir a Login
+                    },
+                    modifier = Modifier.padding(top = 16.dp)
+                ) {
+                    Text("Cerrar Sesión")
+                }
+                // Botón para eliminar cuenta
+                Button(
+                    onClick = {
+                        if (usuarioId != null) {
+                            // Llamar a la API para eliminar el usuario
+                            apiService.eliminarUsuario(usuarioId).enqueue(object : Callback<Void> {
+                                override fun onResponse(call: Call<Void>, response: Response<Void>) {
+                                    if (response.isSuccessful) {
+                                        // Eliminar de la base de datos local dentro de una corutina
+                                        CoroutineScope(Dispatchers.IO).launch {
+                                            serviceDao.deleteUserById(usuarioId.toInt()) // Llamada suspendida
+                                        }
+                                        // Redirigir a la pantalla de login
+                                        navController.navigate("Login")
+                                    } else {
+                                        Toast.makeText(context, "Error al eliminar usuario desde la API", Toast.LENGTH_SHORT).show()
+                                    }
+                                }
+
+                                override fun onFailure(call: Call<Void>, t: Throwable) {
+                                    Toast.makeText(context, "Error de red", Toast.LENGTH_SHORT).show()
+                                }
+                            })
+                        }
+                    },
+                    modifier = Modifier.padding(top = 16.dp)
+                ) {
+                    Text("Eliminar Cuenta")
+                }
+
+
             }
         }
     }
@@ -186,25 +300,3 @@ fun ProfileInfoField(label: String, info: String) {
     }
     Spacer(modifier = Modifier.height(8.dp))
 }
-
-@Composable
-fun Chip(label: String) {
-    Box(
-        modifier = Modifier
-            .background(colorResource(id = R.color.darkMidnightBlue), CircleShape)
-            .padding(horizontal = 16.dp, vertical = 8.dp)
-    ) {
-        Text(text = label, color = Color.White, fontSize = 14.sp)
-    }
-}
-
-@Composable
-fun NavigationApp() {
-    val navController = rememberNavController()
-
-    NavHost(navController = navController, startDestination = "User") {
-        composable("User") { User(navController) }
-        composable("EditUser") { EditUser(navController) }
-    }
-}
-

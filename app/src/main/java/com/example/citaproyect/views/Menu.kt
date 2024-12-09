@@ -1,5 +1,6 @@
 package com.example.citaproyect.views
 
+import android.util.Log
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -12,6 +13,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.*
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
+import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -22,12 +24,17 @@ import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import com.example.citaproyect.R
+import com.example.citaproyect.UsuarioViewModel
 import com.example.citaproyect.models.data.GroupsModel
 
 @Composable
-fun Menu(navController: NavController) {
+fun Menu(navController: NavController, usuarioId: String?) {
+    Log.d("Menu", "usuarioId recibido: $usuarioId")
+
     val selectedItem = remember { mutableStateOf(0) }
     val groups = listOf(
         GroupsModel("Ciencia y Tecnología", R.drawable.ciencias, "Un laboratorio de ideas donde la innovación y el descubrimiento son la norma. ¡Únete a nosotros!", "Reglas: No contenido +18, Respeto entre miembros, Asistencia a las sesiones."),
@@ -56,24 +63,16 @@ fun Menu(navController: NavController) {
                     NavigationBarItem(
                         selected = selectedItem.value == index,
                         onClick = {
-                            if (selectedItem.value != index) {
-                                selectedItem.value = index
-                                val route = when (item.label) {
-                                    "Home" -> "Menu"
-                                    "Groups" -> "Groups"
-                                    "Chats" -> "Chats"
-                                    "Events" -> "Events"
-                                    "User" -> "User"
-                                    else -> "Menu"
-                                }
-                                navController.navigate(route) {
-                                    popUpTo(navController.graph.startDestinationId) {
-                                        saveState = true
-                                    }
-                                    launchSingleTop = true
-                                    restoreState = true
-                                }
+                            selectedItem.value = index
+                            val route = when (item.label) {
+                                "Home" -> "Menu/$usuarioId"
+                                "Groups" ->  "Groups/$usuarioId"
+                                "Chats" -> "Chats/$usuarioId"
+                                "Events" -> "Events/$usuarioId"
+                                "User" -> "User/$usuarioId"
+                                else -> "Menu/$usuarioId"
                             }
+                            navController.navigate(route)
                         },
                         icon = {
                             Icon(
@@ -85,7 +84,7 @@ fun Menu(navController: NavController) {
                         label = {
                             Text(
                                 text = item.label,
-                                color = Color.White
+                                color = if (selectedItem.value == index) Color.White else Color.White
                             )
                         }
                     )
@@ -114,6 +113,7 @@ fun Menu(navController: NavController) {
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
                 Navbar()
+                Text(text = "Usuario ID: $usuarioId", color = Color.Green)
                 Text(
                     text = "Nuevos Anuncios",
                     style = MaterialTheme.typography.headlineMedium,

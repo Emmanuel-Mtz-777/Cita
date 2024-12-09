@@ -29,7 +29,8 @@ import com.example.citaproyect.models.data.NavigationItem
 data class Chat(val name: String, val lastMessage: String, val profileImage: Int)
 
 @Composable
-fun Chats(navController: NavController) {
+fun Chats(navController: NavController, usuarioId: String?) {
+    val usuarioId = usuarioId
     val selectedItem = remember { mutableStateOf(2) }
     val chatList = listOf(
         Chat("John Doe", "Hey, how's it going?", R.drawable.ic_launcher_foreground),
@@ -64,12 +65,12 @@ fun Chats(navController: NavController) {
                         onClick = {
                             selectedItem.value = index
                             val route = when (item.label) {
-                                "Home" -> "Menu"
-                                "Groups" -> "Groups"
-                                "Chats" -> "Chats"
-                                "Events" -> "Events"
-                                "User" -> "User"
-                                else -> "Groups"
+                                "Home" -> "Menu/$usuarioId"
+                                "Groups" ->  "Groups/$usuarioId"
+                                "Chats" -> "Chats/$usuarioId"
+                                "Events" -> "Events/$usuarioId"
+                                "User" -> "User/$usuarioId"
+                                else -> "Menu/$usuarioId"
                             }
                             navController.navigate(route)
                         },
@@ -116,7 +117,7 @@ fun Chats(navController: NavController) {
                     color = Color.White,
                     style = MaterialTheme.typography.headlineMedium
                 )
-
+                Text(text = "El ID del usuario es: ${usuarioId ?: "Desconocido"}")
                 Spacer(modifier = Modifier.height(16.dp))
 
                 // Lista de chats con foto de perfil y desplazamiento vertical

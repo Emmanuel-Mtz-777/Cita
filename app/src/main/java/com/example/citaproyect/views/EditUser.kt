@@ -33,9 +33,12 @@ import java.io.FileOutputStream
 import android.Manifest
 import android.content.ContentValues
 import android.content.pm.PackageManager
+import android.net.ConnectivityManager
+import android.net.Network
 import android.os.Environment
 import android.provider.MediaStore
 import android.util.Log
+import android.widget.Toast
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.material.icons.filled.Edit
 import com.google.accompanist.permissions.ExperimentalPermissionsApi
@@ -51,45 +54,61 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.window.DialogProperties
 import androidx.core.content.ContextCompat
+import androidx.room.Room
+import com.example.citaproyect.ApiService
+import com.example.citaproyect.AppDatabase
+import com.example.citaproyect.Usuario
 import com.google.accompanist.permissions.isGranted
 import com.google.accompanist.permissions.rememberMultiplePermissionsState
 import com.google.accompanist.permissions.rememberPermissionState
-
-
+import com.example.citaproyect.views.utils.isNetworkAvailable
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
+import retrofit2.Response
+import retrofit2.Retrofit
+import retrofit2.converter.gson.GsonConverterFactory
 @OptIn(ExperimentalPermissionsApi::class)
 @Composable
-fun EditUser(navController: NavController) {
-    val context = LocalContext.current
-    var showImagePickerDialog by remember { mutableStateOf(false) }
+fun EditUser(navController: NavController, usuarioId: String?) {
+    var isConnected by remember { mutableStateOf(false) }
+    var isLoading by remember { mutableStateOf(false) }
     var name by remember { mutableStateOf("") }
     var description by remember { mutableStateOf("") }
 
-    // Usamos rememberSaveable para guardar y restaurar la URI de la imagen al cambiar de configuración
-    var profileImageUri by rememberSaveable { mutableStateOf<Uri?>(null) }
-    val cameraPermissionState = rememberPermissionState(Manifest.permission.CAMERA)
-    // Lanzador para tomar una foto desde la cámara
-    val cameraLauncher = rememberLauncherForActivityResult(
-        contract = ActivityResultContracts.TakePicturePreview()
-    ) { bitmap ->
-        if (bitmap != null) {
-            val uri = saveImageToGallery(bitmap, context)
-            profileImageUri = uri // Guardar la URI de la imagen
-        }
+    val context = LocalContext.current
+    val coroutineScope = rememberCoroutineScope()
+
+    // Inicializar la base de datos Room
+    val db = remember { Room.databaseBuilder(context, AppDatabase::class.java, "app-database").build() }
+    val serviceDao = remember { db.ServiceDao() }
+
+    // Inicializar Retrofit
+    val retrofit = remember {
+        Retrofit.Builder()
+            .baseUrl("http://10.0.2.2:5000/") // URL de la API
+            .addConverterFactory(GsonConverterFactory.create())
+            .build()
+    }
+    val apiService = remember { retrofit.create(ApiService::class.java) }
+
+    // Control de la red
+    NetworkStatusListener { networkAvailable ->
+        isConnected = networkAvailable
     }
 
-    // Lanzador para seleccionar una imagen de la galería
-    val galleryLauncher = rememberLauncherForActivityResult(
-        contract = ActivityResultContracts.GetContent()
-    ) { uri: Uri? ->
-        profileImageUri = uri // Guardar la URI de la imagen
+    // Carga la información del usuario si está disponible
+    usuarioId?.let {
+        LaunchedEffect(usuarioId) {
+            val usuario = serviceDao.getUsuarioById(it.toInt())
+            name = usuario?.nombre ?: ""
+            description = usuario?.descripcion ?: ""
+        }
     }
 
     Scaffold(
-        bottomBar = {
-            BottomNavigationBar(
-                navController = navController
-            )
-        }
+        bottomBar = { BottomNavigationBar(navController = navController) }
     ) { innerPadding ->
         Box(
             modifier = Modifier
@@ -113,54 +132,10 @@ fun EditUser(navController: NavController) {
                 horizontalAlignment = Alignment.CenterHorizontally,
                 verticalArrangement = Arrangement.Top
             ) {
-                Text(
-                    text = "Editar Perfil",
-                    fontSize = 35.sp,
-                    color = Color.White
-                )
+                Text(text = "Editar Perfil", fontSize = 35.sp, color = Color.White)
                 Spacer(modifier = Modifier.height(16.dp))
 
-                // Imagen de perfil con botón de edición
-                Box(
-                    contentAlignment = Alignment.BottomEnd,
-                    modifier = Modifier.size(150.dp)
-                ) {
-                    Image(
-                        painter = rememberImagePainter(data = profileImageUri ?: R.drawable.auron),
-                        contentDescription = "Profile Picture",
-                        modifier = Modifier
-                            .size(150.dp)
-                            .clip(CircleShape)
-                            .border(2.dp, Color.White, CircleShape),
-                        contentScale = ContentScale.Crop
-                    )
-
-                    // Botón para abrir el diálogo de selección de imagen
-                    IconButton(
-                        onClick = {
-                            showImagePickerDialog = true // Mostrar el diálogo para seleccionar imagen
-                        },
-                        modifier = Modifier
-                            .size(55.dp)
-                            .clip(CircleShape)
-                            .background(colorResource(id = R.color.jellybean))
-                    ) {
-                        Icon(
-                            imageVector = Icons.Default.Edit,
-                            contentDescription = "Edit",
-                            tint = Color.White
-                        )
-                    }
-                }
-
-                Spacer(modifier = Modifier.height(16.dp))
-
-                // Campo para editar el nombre
-                Text(
-                    text = "Editar Nombre: ",
-                    fontSize = 25.sp,
-                    color = Color.White
-                )
+                Text("Editar Nombre:", fontSize = 25.sp, color = Color.White)
                 BasicTextField(
                     value = name,
                     onValueChange = { name = it },
@@ -168,19 +143,11 @@ fun EditUser(navController: NavController) {
                     modifier = Modifier
                         .fillMaxWidth()
                         .padding(15.dp)
-                        .background(
-                            Color.Gray.copy(alpha = 0.2f),
-                            shape = MaterialTheme.shapes.small
-                        )
+                        .background(Color.Gray.copy(alpha = 0.2f))
                         .padding(8.dp)
                 )
 
-                // Campo para editar la descripción
-                Text(
-                    text = "Editar Descripción:",
-                    fontSize = 25.sp,
-                    color = Color.White
-                )
+                Text("Editar Descripción:", fontSize = 25.sp, color = Color.White)
                 BasicTextField(
                     value = description,
                     onValueChange = { description = it },
@@ -188,93 +155,84 @@ fun EditUser(navController: NavController) {
                     modifier = Modifier
                         .fillMaxWidth()
                         .padding(16.dp)
-                        .background(
-                            Color.Gray.copy(alpha = 0.2f),
-                            shape = MaterialTheme.shapes.small
-                        )
+                        .background(Color.Gray.copy(alpha = 0.2f))
                         .padding(8.dp)
                 )
 
                 Spacer(modifier = Modifier.height(16.dp))
 
-                // Botón para guardar cambios
                 Button(
-                    onClick = { navController.popBackStack() },
-                    colors = ButtonDefaults.buttonColors(containerColor = colorResource(id = R.color.jellybean))
+                    onClick = {
+                        if (name.isNotEmpty() && description.isNotEmpty()) {
+                            if (isConnected) {
+                                // Si hay conexión a internet, procede con la actualización
+                                isLoading = true
+                                coroutineScope.launch {
+                                    try {
+                                        val usuario = Usuario(
+                                            IdUsuario = usuarioId?.toInt() ?: 0,
+                                            nombre = name,
+                                            descripcion = description,
+                                            email = "",  // Si lo necesitas, lo puedes rellenar aquí
+                                            password = "" // Lo mismo con el password
+                                        )
+                                        val response = apiService.updateUser(usuarioId ?: "", usuario)
+                                        if (response.isSuccessful) {
+                                            // Sincronizamos con la base de datos local
+                                            serviceDao.updateUsuario(usuario)
+                                            Toast.makeText(context, "Datos actualizados en la API y localmente", Toast.LENGTH_SHORT).show()
+                                            navController.navigate("User/$usuarioId")
+                                        } else {
+                                            Toast.makeText(context, "Error al actualizar en la API", Toast.LENGTH_SHORT).show()
+                                        }
+                                    } catch (e: Exception) {
+                                        Log.e("EditUser", "Error de red: ${e.message}")
+                                        Toast.makeText(context, "Error de red: ${e.message}", Toast.LENGTH_SHORT).show()
+                                    } finally {
+                                        isLoading = false
+                                    }
+                                }
+                            } else {
+                                // Si no hay conexión, mostrar un mensaje de error
+                                Toast.makeText(context, "Es necesario tener internet para editar", Toast.LENGTH_SHORT).show()
+                            }
+                        } else {
+                            Toast.makeText(context, "Todos los campos son obligatorios", Toast.LENGTH_SHORT).show()
+                        }
+                    },
+                    colors = ButtonDefaults.buttonColors(containerColor = colorResource(id = R.color.jellybean)),
+                    modifier = Modifier.fillMaxWidth().padding(8.dp)
                 ) {
-                    Text(
-                        text = "Guardar Cambios",
-                        color = Color.White,
-                        fontSize = 20.sp
-                    )
+                    Text(text = "Guardar Cambios", color = Color.White, fontSize = 20.sp)
+                }
+
+
+                if (isLoading) {
+                    CircularProgressIndicator(modifier = Modifier.align(Alignment.CenterHorizontally))
                 }
             }
         }
     }
-
-    // Mostrar el diálogo de selección de imagen
-    if (showImagePickerDialog) {
-        ShowImagePickerDialog(
-            cameraLauncher = { cameraLauncher.launch(null) },
-            galleryLauncher = { galleryLauncher.launch("image/*") },
-            onDismiss = { showImagePickerDialog = false }
-        )
-    }
 }
 
 @Composable
-fun ShowImagePickerDialog(
-    cameraLauncher: () -> Unit,
-    galleryLauncher: () -> Unit,
-    onDismiss: () -> Unit
-) {
-    AlertDialog(
-        onDismissRequest = onDismiss,
-        title = { Text("Selecciona una opción") },
-        text = { Text("Elige si deseas tomar una foto o seleccionar desde la galería.") },
-        confirmButton = {
-            TextButton(onClick = {
-                cameraLauncher() // Lanza la cámara
-                onDismiss() // Cierra el diálogo
-            }) {
-                Text("Tomar Foto")
-            }
-        },
-        dismissButton = {
-            TextButton(onClick = {
-                galleryLauncher() // Lanza la galería
-                onDismiss() // Cierra el diálogo
-            }) {
-                Text("Seleccionar desde Galería")
-            }
+fun NetworkStatusListener(onNetworkAvailable: (Boolean) -> Unit) {
+    val context = LocalContext.current
+    val connectivityManager = context.getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
+    val callback = object : ConnectivityManager.NetworkCallback() {
+        override fun onAvailable(network: Network) {
+            onNetworkAvailable(true) // Hay conexión
         }
-    )
-}
 
-// Función para guardar la imagen en la galería
-fun saveImageToGallery(bitmap: Bitmap, context: Context): Uri? {
-    val resolver = context.contentResolver
-    val contentValues = ContentValues().apply {
-        put(MediaStore.Images.Media.DISPLAY_NAME, "profile_picture.jpg")
-        put(MediaStore.Images.Media.MIME_TYPE, "image/jpeg")
-        put(MediaStore.Images.Media.RELATIVE_PATH, Environment.DIRECTORY_PICTURES)
+        override fun onLost(network: Network) {
+            onNetworkAvailable(false) // Se perdió la conexión
+        }
     }
 
-    // Inserta la imagen en la galería
-    val imageUri = resolver.insert(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, contentValues)
-
-    try {
-        // Escribir el bitmap en el URI de la galería
-        imageUri?.let { uri ->
-            val outputStream = resolver.openOutputStream(uri)
-            if (outputStream != null) {
-                bitmap.compress(Bitmap.CompressFormat.JPEG, 100, outputStream)
-            }
-            outputStream?.close()
+    DisposableEffect(context) {
+        connectivityManager.registerDefaultNetworkCallback(callback)
+        onDispose {
+            connectivityManager.unregisterNetworkCallback(callback)
         }
-    } catch (e: Exception) {
-        e.printStackTrace()
     }
-
-    return imageUri
 }

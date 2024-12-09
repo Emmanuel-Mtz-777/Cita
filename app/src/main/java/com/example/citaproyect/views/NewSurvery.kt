@@ -18,7 +18,7 @@ import com.example.citaproyect.R
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun NewSurvey(navController: NavController) {
+fun NewSurvey(navController: NavController, usuarioId: String?) {
     var title by remember { mutableStateOf("") }
     var question by remember { mutableStateOf("") }
     var option1 by remember { mutableStateOf("") }
@@ -38,7 +38,7 @@ fun NewSurvey(navController: NavController) {
         Button(
             onClick = {
                 // Navega de regreso a la vista de eventos
-                navController.navigate("Events")
+                navController.navigate("Events/$usuarioId")
             },
             colors = ButtonDefaults.buttonColors(containerColor = Color.DarkGray),
             modifier = Modifier.padding(16.dp)
@@ -135,7 +135,7 @@ fun NewSurvey(navController: NavController) {
                 // Lógica para guardar la encuesta
                 // ...
                 // Después de guardar, puedes volver a la vista de eventos
-                navController.navigate("Events")
+                navController.navigate("Events/$usuarioId")
             },
             colors = ButtonDefaults.buttonColors(containerColor = Color.Transparent) // Botón transparente
         ) {

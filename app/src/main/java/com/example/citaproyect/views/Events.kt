@@ -31,7 +31,8 @@ import com.example.citaproyect.models.data.NavigationItem
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun Events(navController: NavController) {
+fun Events(navController: NavController, usuarioId: String?) {
+    val usuarioId = usuarioId
     val selectedItem = remember { mutableStateOf(3) }
     val searchText = remember { mutableStateOf("") }
 
@@ -54,12 +55,12 @@ fun Events(navController: NavController) {
                         onClick = {
                             selectedItem.value = index
                             val route = when (item.label) {
-                                "Home" -> "Menu"
-                                "Groups" -> "Groups"
-                                "Chats" -> "Chats"
-                                "Events" -> "Events"
-                                "User" -> "User"
-                                else -> "Events"
+                                "Home" -> "Menu/$usuarioId"
+                                "Groups" ->  "Groups/$usuarioId"
+                                "Chats" -> "Chats/$usuarioId"
+                                "Events" -> "Events/$usuarioId"
+                                "User" -> "User/$usuarioId"
+                                else -> "Menu/$usuarioId"
                             }
                             navController.navigate(route)
                         },
@@ -83,7 +84,7 @@ fun Events(navController: NavController) {
         floatingActionButton = {
             Column {
                 FloatingActionButton(
-                    onClick = { navController.navigate("NewEvents") },
+                    onClick = { navController.navigate("NewEvents/$usuarioId") },
                     containerColor = Color.White,
                     contentColor = colorResource(id = R.color.jellybean)
                 ) {
@@ -94,7 +95,7 @@ fun Events(navController: NavController) {
                 }
                 Spacer(modifier = Modifier.height(16.dp))
                 FloatingActionButton(
-                    onClick = { navController.navigate("NewSurvey") },
+                    onClick = { navController.navigate("NewSurvey/$usuarioId") },
                     containerColor = Color.White,
                     contentColor = colorResource(id = R.color.jellybean)
                 ) {
@@ -140,6 +141,7 @@ fun Events(navController: NavController) {
                             tint = colorResource(id = R.color.jellybean)
                         )
                         Spacer(modifier = Modifier.width(8.dp))
+                        Text(text = "El ID del usuario es: ${usuarioId ?: "Desconocido"}")
                         TextField(
                             value = searchText.value,
                             onValueChange = { searchText.value = it },

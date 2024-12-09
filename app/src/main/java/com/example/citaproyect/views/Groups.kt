@@ -28,14 +28,17 @@ import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
+import androidx.navigation.compose.rememberNavController
 import com.example.citaproyect.R
 import com.example.citaproyect.models.data.GroupsModel
 import com.example.citaproyect.models.data.NavigationItem
 
 @Composable
-fun Groups(navController: NavController) {
+fun Groups(navController: NavController,   usuarioId: String?) {
+    val usuarioId = usuarioId
     val selectedItem = remember { mutableStateOf(1) } // Initial selected index for bottom navigation
 
     // Lista de grupos
@@ -71,12 +74,12 @@ fun Groups(navController: NavController) {
                         onClick = {
                             selectedItem.value = index
                             val route = when (item.label) {
-                                "Home" -> "Menu"
-                                "Groups" -> "Groups"
-                                "Chats" -> "Chats"
-                                "Events" -> "Events"
-                                "User" -> "User"
-                                else -> "Groups"
+                                "Home" -> "Menu/$usuarioId"
+                                "Groups" ->  "Groups/$usuarioId"
+                                "Chats" -> "Chats/$usuarioId"
+                                "Events" -> "Events/$usuarioId"
+                                "User" -> "User/$usuarioId"
+                                else -> "Menu/$usuarioId"
                             }
                             navController.navigate(route)
                         },
@@ -140,7 +143,7 @@ fun Groups(navController: NavController) {
                     color = Color.White,
                     modifier = Modifier.padding(8.dp)
                 )
-
+                Text(text = "El ID del usuario es: ${usuarioId ?: "Desconocido"}")
                 // Fila de grupos en miniatura
                 Row(
                     modifier = Modifier
@@ -329,4 +332,12 @@ fun JoinGroupDialog(group: GroupsModel, onDismiss: () -> Unit) {
             }
         }
     )
+}
+
+
+@Preview(showBackground = true)
+@Composable
+fun PreviewGroups() {
+    val navController = rememberNavController() // Necesitamos un NavController para las rutas de navegación
+    Groups(navController = navController, usuarioId = "12345")
 }
