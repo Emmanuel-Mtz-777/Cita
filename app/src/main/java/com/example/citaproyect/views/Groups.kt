@@ -39,7 +39,7 @@ import com.example.citaproyect.models.data.GroupsModel
 import com.example.citaproyect.models.data.NavigationItem
 
 @Composable
-fun Groups(navController: NavController, usuarioId: String?) {
+fun Groups(navController: NavController, usuarioId: String?,  usuarioId: String?) {
     val usuarioId = usuarioId
     val selectedItem = remember { mutableStateOf(1) } // Initial selected index for bottom navigation
 
@@ -104,7 +104,7 @@ fun Groups(navController: NavController, usuarioId: String?) {
         },
         floatingActionButton = {
             FloatingActionButton(
-                onClick = { navController.navigate("NewGroup") },
+                onClick = { navController.navigate("NewGroup/$usuarioId") },
                 containerColor = Color.White,
                 contentColor = colorResource(id = R.color.jellybean)
             ) {
