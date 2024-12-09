@@ -185,7 +185,7 @@ fun GroupRowHorizontal(group: GroupsModel, navController: NavController) {
 
     Box(
         modifier = Modifier
-            .width(300.dp)
+            .width(420.dp)
             .padding(5.dp)
             .clickable {
                 showDialog = true
