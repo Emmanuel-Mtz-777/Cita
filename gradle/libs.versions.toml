@@ -13,6 +13,7 @@ navigationRuntimeKtx = "2.8.2"
 roomKtx = "2.6.1"
 roomCommon = "2.6.1"
 runtimeLivedata = "1.7.5"
+cronetEmbedded = "119.6045.31"
 
 
 [libraries]
@@ -35,6 +36,7 @@ androidx-navigation-runtime-ktx = { group = "androidx.navigation", name = "navig
 androidx-room-common = { group = "androidx.room", name = "room-common", version.ref = "roomCommon" }
 androidx-room-ktx = { group = "androidx.room", name = "room-ktx", version.ref = "roomKtx" }
 androidx-runtime-livedata = { group = "androidx.compose.runtime", name = "runtime-livedata", version.ref = "runtimeLivedata" }
+cronet-embedded = { group = "org.chromium.net", name = "cronet-embedded", version.ref = "cronetEmbedded" }
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }

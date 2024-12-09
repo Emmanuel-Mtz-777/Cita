@@ -22,6 +22,8 @@ interface ServiceDao {
     @Query("SELECT * FROM Usuarios ORDER BY IdUsuario DESC LIMIT 1")
     fun getLastUsuario(): Usuario?
 
+    @Query("DELETE FROM Usuarios WHERE IdUsuario = :usuarioId")
+    suspend fun deleteUserById(usuarioId: Int)
     @Query("SELECT * FROM usuarios")
     suspend fun getAllUsuarios(): List<Usuario>
 

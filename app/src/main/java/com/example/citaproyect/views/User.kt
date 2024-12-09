@@ -34,6 +34,15 @@ import com.example.citaproyect.models.data.NavigationItem
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 import com.example.citaproyect.views.utils.isNetworkAvailable
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import retrofit2.Callback
+
+
+import retrofit2.Call
+
+import retrofit2.Response
 
 
 @Composable
@@ -238,6 +247,37 @@ fun User(navController: NavController, usuarioId: String?) {
                 ) {
                     Text("Cerrar Sesión")
                 }
+                // Botón para eliminar cuenta
+                Button(
+                    onClick = {
+                        if (usuarioId != null) {
+                            // Llamar a la API para eliminar el usuario
+                            apiService.eliminarUsuario(usuarioId).enqueue(object : Callback<Void> {
+                                override fun onResponse(call: Call<Void>, response: Response<Void>) {
+                                    if (response.isSuccessful) {
+                                        // Eliminar de la base de datos local dentro de una corutina
+                                        CoroutineScope(Dispatchers.IO).launch {
+                                            serviceDao.deleteUserById(usuarioId.toInt()) // Llamada suspendida
+                                        }
+                                        // Redirigir a la pantalla de login
+                                        navController.navigate("Login")
+                                    } else {
+                                        Toast.makeText(context, "Error al eliminar usuario desde la API", Toast.LENGTH_SHORT).show()
+                                    }
+                                }
+
+                                override fun onFailure(call: Call<Void>, t: Throwable) {
+                                    Toast.makeText(context, "Error de red", Toast.LENGTH_SHORT).show()
+                                }
+                            })
+                        }
+                    },
+                    modifier = Modifier.padding(top = 16.dp)
+                ) {
+                    Text("Eliminar Cuenta")
+                }
+
+
             }
         }
     }

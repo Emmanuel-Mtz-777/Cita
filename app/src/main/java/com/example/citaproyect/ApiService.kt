@@ -3,6 +3,7 @@ package com.example.citaproyect
 import retrofit2.Call
 import retrofit2.Response
 import retrofit2.http.Body
+import retrofit2.http.DELETE
 import retrofit2.http.Field
 import retrofit2.http.GET
 import retrofit2.http.POST
@@ -34,5 +35,7 @@ interface ApiService {
     ): Response<Usuario>
 
 
+    @DELETE("api/v2/Usuarios/EliminarUsuario/{usuarioId}")  // Asegúrate de que esta URL sea la correcta según tu backend
+    fun eliminarUsuario(@Path("usuarioId") usuarioId: String): Call<Void>
 }
 
