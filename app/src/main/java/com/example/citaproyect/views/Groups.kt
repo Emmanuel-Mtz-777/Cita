@@ -6,11 +6,9 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.items
-import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
@@ -104,7 +102,7 @@ fun Groups(navController: NavController,   usuarioId: String?) {
         },
         floatingActionButton = {
             FloatingActionButton(
-                onClick = { navController.navigate("NewGroup/$usuarioId") },
+                onClick = { navController.navigate("NewGroup") },
                 containerColor = Color.White,
                 contentColor = colorResource(id = R.color.jellybean)
             ) {
@@ -166,12 +164,8 @@ fun Groups(navController: NavController,   usuarioId: String?) {
                     modifier = Modifier.padding(8.dp)
                 )
 
-                LazyRow(
-                    modifier = Modifier.padding(5.dp)
-                ) {
-                    items(groups.drop(3)) { groupItem ->
-                        GroupRowHorizontal(group = groupItem, navController)
-                    }
+                groups.drop(3).forEach { groupItem ->
+                    GroupGridItem(group = groupItem, navController)
                 }
 
             }
@@ -185,7 +179,7 @@ fun GroupRowHorizontal(group: GroupsModel, navController: NavController) {
 
     Box(
         modifier = Modifier
-            .width(420.dp)
+            .width(300.dp)
             .padding(5.dp)
             .clickable {
                 showDialog = true
@@ -225,6 +219,48 @@ fun GroupRowHorizontal(group: GroupsModel, navController: NavController) {
 }
 
 @Composable
+fun GroupGridItem(group: GroupsModel, navController: NavController) {
+    var showJoinDialog by remember { mutableStateOf(false) }
+
+    Box(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(5.dp)
+            .background(colorResource(id = R.color.prussianBlue), shape = MaterialTheme.shapes.medium)
+            .clickable {
+                showJoinDialog = true
+            },
+        contentAlignment = Alignment.Center
+    ) {
+        Image(
+            painter = painterResource(id = group.imageResId),
+            contentDescription = group.title,
+            modifier = Modifier
+                .fillMaxWidth()
+                .aspectRatio(16f / 9f)
+                .background(colorResource(id = R.color.prussianBlue), shape = MaterialTheme.shapes.medium)
+        )
+        Text(
+            text = group.title,
+            style = MaterialTheme.typography.bodyLarge,
+            color = Color.White,
+            modifier = Modifier
+                .align(Alignment.TopCenter)
+                .padding(8.dp)
+                .background(Color.Black.copy(alpha = 0.5f))
+                .padding(8.dp)
+        )
+    }
+
+    if (showJoinDialog) {
+        JoinGroupDialog(
+            group = group,
+            onDismiss = { showJoinDialog = false }
+        )
+    }
+}
+
+@Composable
 fun GroupDetailsDialog(navController: NavController, group: GroupsModel, onDismiss: () -> Unit) {
     AlertDialog(
         onDismissRequest = onDismiss,
@@ -255,7 +291,6 @@ fun GroupDetailsDialog(navController: NavController, group: GroupsModel, onDismi
         }
     )
 }
-
 
 
 
