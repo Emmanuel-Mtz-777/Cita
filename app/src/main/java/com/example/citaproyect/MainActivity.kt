@@ -97,10 +97,11 @@ fun setupNavGraph(navController: NavHostController) {
         composable("SurveyDetail/{title}") { backStackEntry ->
             SurveyDetail(navController = navController, navBackStackEntry = backStackEntry)
         }
-        composable("EditUser") {
-            EditUser(navController)
-        }
 
+        composable("EditUser/{usuarioId}") { backStackEntry ->
+            val usuarioId = backStackEntry.arguments?.getString("usuarioId")
+            EditUser(navController, usuarioId)
+        }
         composable("chatView/{chatName}/{lastMessage}") { backStackEntry ->
             ChatView(navController = navController, navBackStackEntry = backStackEntry)
         }

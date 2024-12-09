@@ -10,6 +10,7 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
@@ -48,28 +49,46 @@ fun Login(navController: NavController) {
 
     val serviceDao = db.ServiceDao() // Obtener el ServiceDao
 
-
     Box(
         modifier = Modifier
-            .fillMaxSize()
-            .background(colorResource(id = R.color.darkMidnightBlue))
-            .padding(16.dp),
+            .fillMaxSize() // Asegura que el Box ocupe toda la pantalla
+            .background(
+                brush = Brush.verticalGradient(
+                    colors = listOf(
+                        colorResource(id = R.color.black),
+                        colorResource(id = R.color.black),
+                        colorResource(id = R.color.darkMidnightBlue),
+                        colorResource(id = R.color.richBlack),
+                        colorResource(id = R.color.prussianBlue)
+                    )
+                )
+            ),
         contentAlignment = Alignment.Center
     ) {
         Column(
             modifier = Modifier
                 .fillMaxWidth()
-                .verticalScroll(rememberScrollState()),
+                .verticalScroll(rememberScrollState()) // Añadimos scroll vertical
+                .padding(horizontal = 16.dp), // Mantén el padding horizontal
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.Center
         ) {
-            // Botón para crear usuario
+            // Logo de la aplicación
+            Image(
+                painter = painterResource(id = R.drawable.logo2), // Asegúrate de tener logo.png en el directorio drawable
+                contentDescription = "Logo",
+                modifier = Modifier
+                    .size(250.dp) // Tamaño del logo
+                    .padding(bottom = 16.dp)
+            )
+
+            // Botón para crear cuenta
             Button(
                 onClick = {
                     navController.navigate("LoginCreateAcccount") // Cambia esta ruta según tu navegación
                 },
                 modifier = Modifier
-                    .fillMaxWidth()
+                    .fillMaxWidth(0.5f) // El botón ocupa el 50% del ancho de la pantalla
                     .padding(vertical = 8.dp),
                 enabled = !isLoading // Deshabilitar el botón mientras se procesa
             ) {
@@ -78,13 +97,13 @@ fun Login(navController: NavController) {
 
             Spacer(modifier = Modifier.height(16.dp))
 
-            // Botón para loguearse (y también insertar el usuario)
+            // Botón para loguearse
             Button(
                 onClick = {
                     navController.navigate("LoginSesion") // Cambia esta ruta según tu navegación
                 },
                 modifier = Modifier
-                    .fillMaxWidth()
+                    .fillMaxWidth(0.5f) // El botón ocupa el 50% del ancho de la pantalla
                     .padding(vertical = 8.dp),
                 enabled = !isLoading // Deshabilitar el botón mientras se procesa
             ) {

@@ -29,7 +29,14 @@ import android.widget.Toast
 import android.content.Context
 import android.net.ConnectivityManager
 import android.net.NetworkCapabilities
+import androidx.compose.foundation.Image
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
+import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.colorResource
+import androidx.compose.ui.res.painterResource
+import com.example.citaproyect.R
 
 fun isNetworkAvailables(context: Context): Boolean {
     val connectivityManager = context.getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
@@ -37,8 +44,6 @@ fun isNetworkAvailables(context: Context): Boolean {
     val capabilities = connectivityManager.getNetworkCapabilities(network) ?: return false
     return capabilities.hasTransport(NetworkCapabilities.TRANSPORT_WIFI) || capabilities.hasTransport(NetworkCapabilities.TRANSPORT_CELLULAR)
 }
-
-
 @Composable
 fun LoginSesion(navController: NavController) {
     var email by remember { mutableStateOf("") }
@@ -58,16 +63,37 @@ fun LoginSesion(navController: NavController) {
 
     Box(
         modifier = Modifier
-            .fillMaxSize()
-            .background(Color(0xFF1E1E1E))
-            .padding(16.dp),
+            .fillMaxSize() // Asegura que el Box ocupe toda la pantalla
+            .background(Color(0xFF1E1E1E)) // Fondo oscuro para el Box
+            .background(
+                brush = Brush.verticalGradient(
+                    colors = listOf(
+                        colorResource(id = R.color.black),
+                        colorResource(id = R.color.black),
+                        colorResource(id = R.color.darkMidnightBlue),
+                        colorResource(id = R.color.richBlack),
+                        colorResource(id = R.color.prussianBlue)
+                    )
+                )
+            ),
         contentAlignment = Alignment.Center
     ) {
         Column(
-            modifier = Modifier.fillMaxWidth(),
+            modifier = Modifier
+                .fillMaxSize() // Rellenar toda la pantalla
+                .padding(16.dp) // Padding general
+                .verticalScroll(rememberScrollState()), // Habilitar desplazamiento vertical
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.Center
         ) {
+            Image(
+                painter = painterResource(id = R.drawable.logo2), // Asegúrate de tener logo.png en el directorio drawable
+                contentDescription = "Logo",
+                modifier = Modifier
+                    .size(250.dp) // Tamaño del logo
+                    .padding(bottom = 16.dp)
+            )
+
             TextField(
                 value = email,
                 onValueChange = { email = it },
@@ -148,11 +174,12 @@ fun LoginSesion(navController: NavController) {
                         }
                     }
                 },
-                modifier = Modifier.fillMaxWidth()
+                modifier = Modifier
+                    .fillMaxWidth(0.5f) // El botón ocupa el 50% del ancho de la pantalla
+                    .padding(top = 16.dp)
             ) {
                 Text(text = "Inicia Sesión", fontSize = 18.sp)
             }
         }
     }
-
 }

@@ -2,6 +2,7 @@ package com.example.citaproyect.views
 
 import android.util.Log
 import android.widget.Toast
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -27,9 +28,11 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.colorResource
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.PasswordVisualTransformation
@@ -48,7 +51,6 @@ import kotlinx.coroutines.withContext
 import retrofit2.Response
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
-
 @Composable
 fun LoginCreateAcccount(navController: NavController) {
     var nombre by remember { mutableStateOf("") }
@@ -75,17 +77,44 @@ fun LoginCreateAcccount(navController: NavController) {
     Box(
         modifier = Modifier
             .fillMaxSize()
-            .background(colorResource(id = R.color.darkMidnightBlue))
+            .background(
+                brush = Brush.verticalGradient(
+                    colors = listOf(
+                        colorResource(id = R.color.black),
+                        colorResource(id = R.color.black),
+                        colorResource (id = R.color.darkMidnightBlue),
+                        colorResource(id = R.color.richBlack),
+                        colorResource(id = R.color.prussianBlue)
+                    )
+                )
+            )
             .padding(16.dp),
         contentAlignment = Alignment.Center
     ) {
         Column(
             modifier = Modifier
                 .fillMaxWidth()
-                .verticalScroll(scrollState),
+                .verticalScroll(scrollState), // Habilitar scroll vertical
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.Center
         ) {
+            // Logo de la aplicación
+            Image(
+                painter = painterResource(id = R.drawable.logo2), // Asegúrate de tener logo.png en el directorio drawable
+                contentDescription = "Logo",
+                modifier = Modifier
+                    .size(250.dp) // Tamaño del logo
+                    .padding(bottom = 16.dp)
+            )
+
+            // Texto "Bienvenido"
+            Text(
+                text = "Bienvenido",
+                color = Color.White,
+                fontSize = 24.sp,
+                modifier = Modifier.padding(bottom = 32.dp)
+            )
+
             // Campo de entrada para el nombre
             TextField(
                 value = nombre,
@@ -159,7 +188,7 @@ fun LoginCreateAcccount(navController: NavController) {
                                     withContext(Dispatchers.Main) {
                                         isLoading = false // Detener el indicador de carga
                                         Toast.makeText(context, "Usuario insertado exitosamente", Toast.LENGTH_SHORT).show()
-                                        navController.navigate("Login") // Navegar a la pantalla de menú
+                                        navController.navigate("Login") // Navegar a la pantalla de login
                                     }
                                 } else {
                                     withContext(Dispatchers.Main) {
@@ -179,7 +208,9 @@ fun LoginCreateAcccount(navController: NavController) {
                         Toast.makeText(context, "Todos los campos son obligatorios", Toast.LENGTH_SHORT).show()
                     }
                 },
-                modifier = Modifier.fillMaxWidth(),
+                modifier = Modifier
+                    .fillMaxWidth(0.5f) // El botón ocupa el 50% del ancho de la pantalla
+                    .padding(top = 16.dp),
                 enabled = !isLoading // Deshabilitar el botón mientras se procesa
             ) {
                 if (isLoading) {
@@ -191,7 +222,6 @@ fun LoginCreateAcccount(navController: NavController) {
                     Text(text = "Crear Cuenta", fontSize = 18.sp)
                 }
             }
-
 
             Spacer(modifier = Modifier.height(16.dp))
         }
